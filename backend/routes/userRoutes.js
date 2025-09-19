@@ -1,15 +1,14 @@
-const express = require('express')
-const {
-  signUpUser,
-  signInUser,
-  getUser,
-} = require('../controller/user.controller')
-const {verifyUser} = require('../middleware/middleware')
-const router = express.Router()
+const express = require('express');
+const route = express.Router();
+const {isAuthenticateuser} = require('../Middelwares/authuser.js')
+const {registermobile, getuser, optverify, resendotp, updateuser, logout, updateuserdetails} = require('../controller/usercontroller')
 
-router.post('/signup', signUpUser)
-router.post('/signin', signInUser)
+route.post('/registermobile', registermobile)
+route.get('/user/:id',isAuthenticateuser, getuser)
+route.put('/otpverify/:id', optverify)
+route.get('/resendotp/:id', resendotp)
+route.put('/updateuser/:id', updateuser)
+route.put('/user/:id', updateuserdetails)
+route.get('/logout', logout)
 
-router.route('/me').get([verifyUser], getUser)
-
-module.exports = router
+module.exports = route
