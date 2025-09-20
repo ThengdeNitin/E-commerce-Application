@@ -1,3 +1,5 @@
-module.exports = resolveandcatch = (myfun) => (req, res, next) =>{
-    Promise.resolve(myfun(req, res, next).catch(next))
-}
+const resolveAndCatch = (fn) => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
+
+export default resolveAndCatch;

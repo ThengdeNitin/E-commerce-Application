@@ -1,10 +1,19 @@
-const express = require('express');
-const { createProduct, imagekits, getallproducts, SendSingleProduct } = require('../controller/productcontroller');
-const route = express.Router();
+import express from 'express';
+import {
+  createProduct,
+  imagekits,
+  getAllProducts,
+  getSingleProduct
+} from '../controllers/productcontroller.js';  // <-- corrected path
 
-route.post('/create_product', createProduct)
-route.get('/get', imagekits)
-route.get('/products', getallproducts)
-route.get('/products/:id',SendSingleProduct)
+const router = express.Router();
 
-module.exports = route
+// Products
+router.post('/products', createProduct);          // Create a new product
+router.get('/products', getAllProducts);         // Get all products
+router.get('/products/:id', getSingleProduct);  // Get single product by ID
+
+// Images (from ImageKit)
+router.get('/images', imagekits);                // List images
+
+export default router;

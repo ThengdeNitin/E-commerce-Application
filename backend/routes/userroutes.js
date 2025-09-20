@@ -1,14 +1,24 @@
-const express = require('express');
+import express from "express";
+import isAuthenticateUser from "../middlewares/authuser.js";
+import {
+    registerMobile,
+    getUser,
+    otpVerify,
+    resendOtp,
+    updateUser,
+    logout,
+    updateUserDetails
+  } from "../controllers/usercontroller.js";
+  
+
 const route = express.Router();
-const {isAuthenticateuser} = require('../Middelwares/authuser.js')
-const {registermobile, getuser, optverify, resendotp, updateuser, logout, updateuserdetails} = require('../controller/usercontroller')
 
-route.post('/registermobile', registermobile)
-route.get('/user/:id',isAuthenticateuser, getuser)
-route.put('/otpverify/:id', optverify)
-route.get('/resendotp/:id', resendotp)
-route.put('/updateuser/:id', updateuser)
-route.put('/user/:id', updateuserdetails)
-route.get('/logout', logout)
+route.post("/registermobile", registerMobile);
+route.get("/user/:id", isAuthenticateUser, getUser);
+route.put("/otpverify/:id", otpVerify);
+route.get("/resendotp/:id", resendOtp);
+route.put("/updateuser/:id", updateUser);
+route.put("/user/:id", updateUserDetails);
+route.get("/logout", logout);
 
-module.exports = route
+export default route;

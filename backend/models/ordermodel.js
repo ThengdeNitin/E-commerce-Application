@@ -1,26 +1,36 @@
-const mongoose = require('mongoose')
+import mongoose from "mongoose";
 
-const orders = new mongoose.Schema({
-    user:{
-        type:mongoose.ObjectId,
-        ref:"MynUser",
-        required:true
+const orderSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "MynUser",
+      required: true,
     },
-    orderItems: [{
-        type:mongoose.ObjectId,
-        ref:"myntraproduct",
-        qty:{type:Number},
-        required:true
-    }],
-    createdAt:{
-        type:Date,
-        default: Date.now
+    orderItems: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "myntraproduct",
+          required: true,
+        },
+        qty: {
+          type: Number,
+          required: true,
+          min: [1, "Quantity must be at least 1"],
+        },
+      },
+    ],
+    paymentInfo: {
+      status: { type: String, required: true },
+      // You can add more fields if you want, e.g.:
+      // method: { type: String },
+      // transactionId: { type: String },
     },
-    paymentInfo:{
-        status: { type: String, required: true },
-    },
-    
+  },
+  { timestamps: true } // handles createdAt and updatedAt automatically
+);
 
-})
+const order = mongoose.model("MynOrder", orderSchema);
 
-module.exports = mongoose.model('MynOrder', orders)
+export default order;

@@ -1,73 +1,81 @@
-const mongoose = require('mongoose')
+import mongoose from "mongoose";
 
-const productmodel = new mongoose.Schema({
-    brand:{
-        type:String,
-
+const productSchema = new mongoose.Schema(
+  {
+    brand: {
+      type: String,
+      trim: true,
     },
-    title:{
-        type:String
+    title: {
+      type: String,
+      required: [true, "Product title is required"],
+      trim: true,
     },
-    sellingPrice:{
-        type:Number
+    sellingPrice: {
+      type: Number,
+      required: [true, "Selling price is required"],
+      min: [0, "Selling price cannot be negative"],
     },
-    mrp:{
-        type:Number
+    mrp: {
+      type: Number,
+      required: [true, "MRP is required"],
+      min: [0, "MRP cannot be negative"],
     },
-    size:{
-        type:String
+    size: {
+      type: String,
     },
-    bulletPoints:[
-        {
-            point:{
-                type:String
-            }
-        }
+    bulletPoints: [
+      {
+        type: String,
+        trim: true,
+      },
     ],
-    productDetails:{
-        type:String
+    productDetails: {
+      type: String,
     },
-    material:{
-        type:String
+    material: {
+      type: String,
     },
-    specification:[
-        {
-            point:{
-                type:String
-        }
-        }
+    specification: [
+      {
+        type: String,
+        trim: true,
+      },
     ],
-    category:{
-        type:String
+    category: {
+      type: String,
+      index: true,
     },
-    style_no:{
-        type:String
+    styleNo: {
+      type: String,
     },
-    images:[
-        {
-            url:{
-                type:String
-            }
-        }
-           
+    images: [
+      {
+        url: {
+          type: String,
+          required: true,
+        },
+      },
     ],
-    createDate:{
-        type:Date,
-        default: Date.now
+    color: {
+      type: String,
     },
-    color:{
-        type:String
+    gender: {
+      type: String,
+      enum: ["Men", "Women", "Unisex", "Kids"], // optional validation
     },
-    gender:{
-        type:String
+    stock: {
+      type: Number,
+      default: 0,
+      min: [0, "Stock cannot be negative"],
     },
-    stock:{
-        type:Number
-    }
+  },
+  { timestamps: true }
+);
 
+// 🔍 For text search
+productSchema.index({ title: "text", brand: "text", category: "text" });
 
-})
+const product = mongoose.model("myntraproduct", productSchema);
 
-productmodel.index({title: 1})
-
-module.exports = mongoose.model('myntraproduct', productmodel)
+export default product;

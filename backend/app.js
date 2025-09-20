@@ -1,29 +1,39 @@
-const express = require('express')
-const app = express(); 
-const bodyParser =  require('body-parser')
-const cookieParser = require('cookie-parser')
-const User = require('./routes/userroutes.js')
-const Product = require('./routes/productroute')
-const Order = require('./routes/orderroutes')
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const path = require('path');
 const errorMiddleware = require('./Middelwares/error');
-const path = require("path");
+
+// Load environment variables first
 if (process.env.NODE_ENV !== "PRODUCTION") {
     require("dotenv").config({ path: "backend/config/config.env" });
-  }
+}
 
-app.use(express.json())
-app.use(cookieParser())
-app.use(bodyParser.urlencoded({extended:true}))
+// Import routes
+const userRoutes = require('./routes/userroutes.js');
+const productRoutes = require('./routes/productroute.js');
+const orderRoutes = require('./routes/orderroutes.js');
 
-app.use('/api/v1', User)
-app.use('/api/v1', Product)
-app.use('/api/v1', Order)
+const app = express();
 
-app.use(express.static(path.join(__dirname, "../frontend/build")));
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // replaces body-parser
+app.use(cookieParser());
 
-app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "../frontend/build/index.html"));
-});
+// API routes
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/products', productRoutes);
+app.use('/api/v1/orders', orderRoutes);
 
-app.use(errorMiddleware)
-module.exports = app
+// Serve frontend (React) in production
+if (process.env.NODE_ENV === "PRODUCTION") {
+    app.use(express.static(path.join(__dirname, "../frontend/build")));
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname, "../frontend/build/index.html"));
+    });
+}
+
+// Global error middleware
+app.use(errorMiddleware);
+
+module.exports = app;

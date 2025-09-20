@@ -1,74 +1,69 @@
-const mongoose = require('mongoose')
-const validator = require('validator')
-const jwtToken = require('jsonwebtoken')
+import mongoose from 'mongoose'
+import validator from 'validator';
+import jwt from 'jsonwebtoken';
 
-
-const usermodel = new mongoose.Schema({
-    phonenumber : {
-        type:Number,
-        unique:true,
-        require:[true, "Error: Enter Phone Number Above"]
+const userSchema = new mongoose.Schema(
+  {
+    phonenumber: {
+      type: Number,
+      unique: true,
+      required: [true, "Error: Enter Phone Number"],
     },
-    verify : {
-        type: String,
-        required: true,
-        default: "unverified"
+    verify: {
+      type: String,
+      enum: ["verified", "unverified"],
+      default: "unverified",
     },
-    email:{
-        type:String,
-        validate:[validator.isEmail, 'Please enter valid Email ID ']
-        
+    email: {
+      type: String,
+      validate: [validator.isEmail, "Please enter a valid Email ID"],
     },
-
-    password:{
-        type:String
+    password: {
+      type: String,
+      minlength: [6, "Password must be at least 6 characters"],
+      select: false, // exclude from queries by default
     },
-
-    otp:{
-        type:Number,
-        createdAt: {
-            type: Date,
-            required: true,
-            default: Date.now,
-            index: { expires: '1m' }
-          }
-        
+    otp: {
+      code: {
+        type: Number,
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+        expires: 60, 
+      },
     },
-
-    name:{
-        type:String
+    name: {
+      type: String,
+      trim: true,
     },
-   gender:{
-       type:String
-   },
-   DOB:{
-       type:Date
-   },
-   address:{
-       pincode:{
-           type:Number
-       },
-       
-       address1:{
-           type:String
-       },
-       address2:{
-        type:String
-        },
-        citystate:{
-            type:String
-        },  
-   },
-   TOA:{
-       type:String
-   }
-    
+    gender: {
+      type: String,
+      enum: ["Male", "Female", "Other"],
+    },
+    DOB: {
+      type: Date,
+    },
+    address: {
+      pincode: Number,
+      address1: String,
+      address2: String,
+      citystate: String,
+    },
+    TOA: {
+      type: String, // Terms of Agreement (accepted/not accepted)
+    },
+  },
+  { timestamps: true }
+);
 
-})
+// 🔑 JWT token generator
+userSchema.methods.getJWTToken = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: "2d",
+  });
+};
 
-usermodel.methods.getJWTToken = function () {
-   
-    return jwtToken.sign({id:this._id}, process.env.SECRETID, {expiresIn: '2d'})
-}
+const User = mongoose.model("MynUser", userSchema);
 
-module.exports = mongoose.model('MynUser', usermodel)
+export default User;
