@@ -25,24 +25,21 @@ const ProductList = () => {
   const [createProduct] = useCreateProductMutation();
   const { data: categories } = useFetchCategoriesQuery();
 
-  // ✅ Now send JSON, not FormData
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
-      const productData = {
-        name,
-        image, // this is already a string like "/uploads/image-xxxx.jpg"
-        description,
-        price,
-        category,
-        quantity,
-        brand,
-        countInStock: stock,
-      };
-
+      const productData = new FormData();
+      productData.append("name", name);
+      productData.append("description", description);
+      productData.append("price", price);
+      productData.append("category", category);
+      productData.append("quantity", quantity);
+      productData.append("brand", brand);
+      productData.append("countInStock", stock);
+      productData.append("image", image); 
+  
       const res = await createProduct(productData).unwrap();
-
       toast.success(`${res.name} is created`);
       navigate("/");
     } catch (error) {
@@ -50,8 +47,8 @@ const ProductList = () => {
       toast.error("Product create failed. Try Again.");
     }
   };
+  
 
-  // ✅ Uploads the file and saves returned image path
   const uploadFileHandler = async (e) => {
     const formData = new FormData();
     formData.append("image", e.target.files[0]);
@@ -59,8 +56,8 @@ const ProductList = () => {
     try {
       const res = await uploadProductImage(formData).unwrap();
       toast.success(res.message);
-      setImage(res.image); // save string path
-      setImageUrl(res.image); // preview in UI
+      setImage(res.image); 
+      setImageUrl(res.image); 
     } catch (error) {
       toast.error(error?.data?.message || error.error);
     }

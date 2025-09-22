@@ -7,24 +7,20 @@ import {
   AiOutlineShoppingCart,
 } from "react-icons/ai";
 import { FaHeart } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import "./Navigation.css";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../../redux/api/usersApiSlice";
 import { logout } from "../../redux/features/auth/authSlice";
 import FavoritesCount from "../Products/FavoritesCount";
+import AdminMenu from "../Admin/AdminMenu.jsx";
 
 const Navigation = () => {
   const { userInfo } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.cart);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
+  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -42,178 +38,161 @@ const Navigation = () => {
   };
 
   return (
-    <div
-      style={{ zIndex: 9999 }}
-      className={`${
-        showSidebar ? "hidden" : "flex"
-      } xl:flex lg:flex md:hidden sm:hidden flex-col justify-between p-4 text-white bg-[#000] w-[4%] hover:w-[15%] h-[100vh]  fixed `}
-      id="navigation-container"
-    >
-      <div className="flex flex-col justify-center space-y-4">
-        <Link
-          to="/"
-          className="flex items-center transition-transform transform hover:translate-x-2"
-        >
-          <AiOutlineHome className="mr-2 mt-[3rem]" size={26} />
-          <span className="hidden nav-item-name mt-[3rem]">HOME</span>{" "}
-        </Link>
+    <nav className="w-full bg-[#000] text-white shadow-md sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
+        {/* LEFT SECTION */}
+        <div className="flex items-center space-x-6">
+          <Link to="/" className="flex items-center hover:text-pink-500">
+            <AiOutlineHome size={22} className="mr-1" />
+            <span className="hidden md:inline">HOME</span>
+          </Link>
 
-        <Link
-          to="/shop"
-          className="flex items-center transition-transform transform hover:translate-x-2"
-        >
-          <AiOutlineShopping className="mr-2 mt-[3rem]" size={26} />
-          <span className="hidden nav-item-name mt-[3rem]">SHOP</span>{" "}
-        </Link>
+          <Link to="/shop" className="flex items-center hover:text-pink-500">
+            <AiOutlineShopping size={22} className="mr-1" />
+            <span className="hidden md:inline">SHOP</span>
+          </Link>
 
-        <Link to="/cart" className="flex relative">
-          <div className="flex items-center transition-transform transform hover:translate-x-2">
-            <AiOutlineShoppingCart className="mt-[3rem] mr-2" size={26} />
-            <span className="hidden nav-item-name mt-[3rem]">Cart</span>{" "}
-          </div>
-
-          <div className="absolute top-9">
+          <Link
+            to="/cart"
+            className="relative flex items-center hover:text-pink-500"
+          >
+            <AiOutlineShoppingCart size={22} className="mr-1" />
+            <span className="hidden md:inline">CART</span>
             {cartItems.length > 0 && (
-              <span>
-                <span className="px-1 py-0 text-sm text-white bg-pink-500 rounded-full">
-                  {cartItems.reduce((a, c) => a + c.qty, 0)}
-                </span>
+              <span className="absolute -top-2 -right-3 px-2 text-xs text-white bg-pink-500 rounded-full">
+                {cartItems.reduce((a, c) => a + c.qty, 0)}
               </span>
             )}
-          </div>
-        </Link>
+          </Link>
 
-        <Link to="/favorite" className="flex relative">
-          <div className="flex justify-center items-center transition-transform transform hover:translate-x-2">
-            <FaHeart className="mt-[3rem] mr-2" size={20} />
-            <span className="hidden nav-item-name mt-[3rem]">
-              Favorites
-            </span>{" "}
-            <FavoritesCount />
-          </div>
-        </Link>
-      </div>
-
-      <div className="relative">
-        <button
-          onClick={toggleDropdown}
-          className="flex items-center text-gray-800 focus:outline-none"
-        >
-          {userInfo ? (
-            <span className="text-white">{userInfo.username}</span>
-          ) : (
-            <></>
-          )}
-          {userInfo && (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className={`h-4 w-4 ml-1 ${
-                dropdownOpen ? "transform rotate-180" : ""
-              }`}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="white"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d={dropdownOpen ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-              />
-            </svg>
-          )}
-        </button>
-
-        {dropdownOpen && userInfo && (
-          <ul
-            className={`absolute right-0 mt-2 mr-14 space-y-2 bg-white text-gray-600 ${
-              !userInfo.isAdmin ? "-top-20" : "-top-80"
-            } `}
+          <Link
+            to="/favorite"
+            className="flex items-center hover:text-pink-500"
           >
-            {userInfo.isAdmin && (
-              <>
-                <li>
-                  <Link
-                    to="/admin/dashboard"
-                    className="block px-4 py-2 hover:bg-gray-100"
-                  >
-                    Dashboard
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/admin/productlist"
-                    className="block px-4 py-2 hover:bg-gray-100"
-                  >
-                    Products
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/admin/categorylist"
-                    className="block px-4 py-2 hover:bg-gray-100"
-                  >
-                    Category
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/admin/orderlist"
-                    className="block px-4 py-2 hover:bg-gray-100"
-                  >
-                    Orders
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/admin/userlist"
-                    className="block px-4 py-2 hover:bg-gray-100"
-                  >
-                    Users
-                  </Link>
-                </li>
-              </>
-            )}
+            <FaHeart size={20} className="mr-1" />
+            <span className="hidden md:inline">FAVORITES</span>
+            <FavoritesCount />
+          </Link>
+        </div>
 
-            <li>
-              <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">
-                Profile
-              </Link>
-            </li>
-            <li>
+        {/* RIGHT SECTION */}
+        <div className="relative">
+          {userInfo ? (
+            <>
               <button
-                onClick={logoutHandler}
-                className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                onClick={toggleDropdown}
+                className="flex items-center space-x-1 hover:text-pink-500 focus:outline-none"
               >
-                Logout
+                <span>{userInfo.username}</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-4 w-4 ${dropdownOpen ? "rotate-180" : ""}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
               </button>
-            </li>
-          </ul>
-        )}
-        {!userInfo && (
-          <ul>
-            <li>
+
+              {dropdownOpen && (
+                <ul className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow-lg">
+                  {userInfo.isAdmin && (
+                    <>
+                      <li>
+                        <Link
+                          to="/admin/dashboard"
+                          className="block px-4 py-2 hover:bg-gray-100"
+                        >
+                          Dashboard
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/admin/productlist"
+                          className="block px-4 py-2 hover:bg-gray-100"
+                        >
+                          Products
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/admin/categorylist"
+                          className="block px-4 py-2 hover:bg-gray-100"
+                        >
+                          Category
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/admin/orderlist"
+                          className="block px-4 py-2 hover:bg-gray-100"
+                        >
+                          Orders
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/admin/userlist"
+                          className="block px-4 py-2 hover:bg-gray-100"
+                        >
+                          Users
+                        </Link>
+                      </li>
+                    </>
+                  )}
+                  <li>
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                    >
+                      Profile
+                    </Link>
+                  </li>
+                  <li>
+                    <button
+                      onClick={logoutHandler}
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </>
+          ) : (
+            <div className="flex space-x-6">
               <Link
                 to="/login"
-                className="flex items-center mt-5 transition-transform transform hover:translate-x-2"
+                className="flex items-center hover:text-pink-500"
               >
-                <AiOutlineLogin className="mr-2 mt-[4px]" size={26} />
-                <span className="hidden nav-item-name">LOGIN</span>
+                <AiOutlineLogin size={22} className="mr-1" />
+                <span className="hidden md:inline">LOGIN</span>
               </Link>
-            </li>
-            <li>
               <Link
                 to="/register"
-                className="flex items-center mt-5 transition-transform transform hover:translate-x-2"
+                className="flex items-center hover:text-pink-500"
               >
-                <AiOutlineUserAdd size={26} />
-                <span className="hidden nav-item-name">REGISTER</span>
+                <AiOutlineUserAdd size={22} className="mr-1" />
+                <span className="hidden md:inline">REGISTER</span>
               </Link>
-            </li>
-          </ul>
-        )}
+            </div>
+          )}
+
+          {/* ✅ Only show AdminMenu if user is admin */}
+          {userInfo?.isAdmin && (
+            <div className="mt-2">
+              <AdminMenu />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </nav>
   );
 };
 

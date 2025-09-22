@@ -5,43 +5,35 @@ import fs from "fs";
 
 const addProduct = asyncHandler(async (req, res) => {
   try {
-    const { name, description, price, category, quantity, brand } = req.fields;
-    const { image } = req.files || {};
+    const { name, description, price, category, quantity, brand, image } = req.body;
 
-    // Validation
     switch (true) {
       case !name:
-        return res.json({ error: "Name is required" });
+        return res.status(400).json({ error: "Name is required" });
       case !brand:
-        return res.json({ error: "Brand is required" });
+        return res.status(400).json({ error: "Brand is required" });
       case !description:
-        return res.json({ error: "Description is required" });
+        return res.status(400).json({ error: "Description is required" });
       case !price:
-        return res.json({ error: "Price is required" });
+        return res.status(400).json({ error: "Price is required" });
       case !category:
-        return res.json({ error: "Category is required" });
+        return res.status(400).json({ error: "Category is required" });
       case !quantity:
-        return res.json({ error: "Quantity is required" });
+        return res.status(400).json({ error: "Quantity is required" });
     }
 
-    const newProduct = {
+    const newProduct = new Product({
       name,
       description,
       price,
       quantity,
       brand,
       category: new mongoose.Types.ObjectId(category),
-    };
+      image, 
+    });
 
-    if (image) {
-      newProduct.image = `/uploads/${image.originalFilename}`;
-      const uploadPath = `uploads/${image.originalFilename}`;
-      fs.renameSync(image.filepath, uploadPath);
-    }
-
-    const product = new Product(newProduct);
-    await product.save();
-    res.json(product);
+    const savedProduct = await newProduct.save();
+    res.status(201).json(savedProduct);
   } catch (error) {
     console.error(error);
     res.status(400).json({ error: error.message });
@@ -49,11 +41,11 @@ const addProduct = asyncHandler(async (req, res) => {
 });
 
 
+
 const updateProductDetails = asyncHandler(async (req, res) => {
   try {
     const { name, description, price, category, quantity, brand } = req.fields;
     const { image } = req.files || {};
-    // console.log(image);
 
     const updatedData = {};
     if (name) updatedData.name = name;
