@@ -29,24 +29,26 @@ const ProductList = () => {
     e.preventDefault();
   
     try {
-      const productData = new FormData();
-      productData.append("name", name);
-      productData.append("description", description);
-      productData.append("price", price);
-      productData.append("category", category);
-      productData.append("quantity", quantity);
-      productData.append("brand", brand);
-      productData.append("countInStock", stock);
-      productData.append("image", image); 
+      const productData = {
+        name,
+        image, 
+        description,
+        price,
+        category,
+        quantity,
+        brand,
+        countInStock: stock,
+      };
   
-      const res = await createProduct(productData).unwrap();
-      toast.success(`${res.name} is created`);
-      navigate("/");
+      const res = await createProduct(productData);
+      toast.success(`${res.name} created successfully`);
+      navigate("/"); 
     } catch (error) {
       console.error(error);
-      toast.error("Product create failed. Try Again.");
+      toast.error(error?.data?.error || "Failed to create product");
     }
   };
+  
   
 
   const uploadFileHandler = async (e) => {
