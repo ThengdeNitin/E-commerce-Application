@@ -18,40 +18,40 @@ const ProductList = () => {
   const [brand, setBrand] = useState("");
   const [stock, setStock] = useState(0);
   const [imageUrl, setImageUrl] = useState(null);
+
   const navigate = useNavigate();
 
   const [uploadProductImage] = useUploadProductImageMutation();
   const [createProduct] = useCreateProductMutation();
   const { data: categories } = useFetchCategoriesQuery();
 
+  // ✅ Now send JSON, not FormData
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const productData = new FormData();
-      productData.append("image", image);
-      productData.append("name", name);
-      productData.append("description", description);
-      productData.append("price", price);
-      productData.append("category", category);
-      productData.append("quantity", quantity);
-      productData.append("brand", brand);
-      productData.append("countInStock", stock);
+      const productData = {
+        name,
+        image, // this is already a string like "/uploads/image-xxxx.jpg"
+        description,
+        price,
+        category,
+        quantity,
+        brand,
+        countInStock: stock,
+      };
 
-      const { data } = await createProduct(productData);
+      const res = await createProduct(productData).unwrap();
 
-      if (data.error) {
-        toast.error("Product create failed. Try Again.");
-      } else {
-        toast.success(`${data.name} is created`);
-        navigate("/");
-      }
+      toast.success(`${res.name} is created`);
+      navigate("/");
     } catch (error) {
       console.error(error);
       toast.error("Product create failed. Try Again.");
     }
   };
 
+  // ✅ Uploads the file and saves returned image path
   const uploadFileHandler = async (e) => {
     const formData = new FormData();
     formData.append("image", e.target.files[0]);
@@ -59,8 +59,8 @@ const ProductList = () => {
     try {
       const res = await uploadProductImage(formData).unwrap();
       toast.success(res.message);
-      setImage(res.image);
-      setImageUrl(res.image);
+      setImage(res.image); // save string path
+      setImageUrl(res.image); // preview in UI
     } catch (error) {
       toast.error(error?.data?.message || error.error);
     }
@@ -85,14 +85,13 @@ const ProductList = () => {
 
           <div className="mb-3">
             <label className="border text-white px-4 block w-full text-center rounded-lg cursor-pointer font-bold py-11">
-              {image ? image.name : "Upload Image"}
-
+              {image ? "Image Selected" : "Upload Image"}
               <input
                 type="file"
                 name="image"
                 accept="image/*"
                 onChange={uploadFileHandler}
-                className={!image ? "hidden" : "text-white"}
+                className="hidden"
               />
             </label>
           </div>
@@ -109,7 +108,7 @@ const ProductList = () => {
                 />
               </div>
               <div className="two ml-10 ">
-                <label htmlFor="name block">Price</label> <br />
+                <label htmlFor="price">Price</label> <br />
                 <input
                   type="number"
                   className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
@@ -118,9 +117,10 @@ const ProductList = () => {
                 />
               </div>
             </div>
+
             <div className="flex flex-wrap">
               <div className="one">
-                <label htmlFor="name block">Quantity</label> <br />
+                <label htmlFor="quantity">Quantity</label> <br />
                 <input
                   type="number"
                   className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
@@ -129,7 +129,7 @@ const ProductList = () => {
                 />
               </div>
               <div className="two ml-10 ">
-                <label htmlFor="name block">Brand</label> <br />
+                <label htmlFor="brand">Brand</label> <br />
                 <input
                   type="text"
                   className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
@@ -139,11 +139,11 @@ const ProductList = () => {
               </div>
             </div>
 
-            <label htmlFor="" className="my-5">
+            <label htmlFor="description" className="my-5">
               Description
             </label>
             <textarea
-              type="text"
+              id="description"
               className="p-2 mb-3 bg-[#101011] border rounded-lg w-[95%] text-white"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -151,9 +151,9 @@ const ProductList = () => {
 
             <div className="flex justify-between">
               <div>
-                <label htmlFor="name block">Count In Stock</label> <br />
+                <label htmlFor="stock">Count In Stock</label> <br />
                 <input
-                  type="text"
+                  type="number"
                   className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
                   value={stock}
                   onChange={(e) => setStock(e.target.value)}
@@ -161,12 +161,12 @@ const ProductList = () => {
               </div>
 
               <div>
-                <label htmlFor="">Category</label> <br />
+                <label htmlFor="category">Category</label> <br />
                 <select
-                  placeholder="Choose Category"
                   className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
                   onChange={(e) => setCategory(e.target.value)}
                 >
+                  <option value="">Select category</option>
                   {categories?.map((c) => (
                     <option key={c._id} value={c._id}>
                       {c.name}

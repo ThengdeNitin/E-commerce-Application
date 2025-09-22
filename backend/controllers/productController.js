@@ -1,9 +1,12 @@
 import asyncHandler from "../middlewares/asyncHandler.js";
 import Product from "../models/productModel.js";
+import mongoose from "mongoose";
+import fs from "fs";
 
 const addProduct = asyncHandler(async (req, res) => {
   try {
     const { name, description, price, category, quantity, brand } = req.fields;
+    const { image } = req.files || {};
 
     // Validation
     switch (true) {
@@ -21,49 +24,64 @@ const addProduct = asyncHandler(async (req, res) => {
         return res.json({ error: "Quantity is required" });
     }
 
-    const product = new Product({ ...req.fields });
+    const newProduct = {
+      name,
+      description,
+      price,
+      quantity,
+      brand,
+      category: new mongoose.Types.ObjectId(category),
+    };
+
+    if (image) {
+      newProduct.image = `/uploads/${image.originalFilename}`;
+      const uploadPath = `uploads/${image.originalFilename}`;
+      fs.renameSync(image.filepath, uploadPath);
+    }
+
+    const product = new Product(newProduct);
     await product.save();
     res.json(product);
   } catch (error) {
     console.error(error);
-    res.status(400).json(error.message);
+    res.status(400).json({ error: error.message });
   }
 });
+
 
 const updateProductDetails = asyncHandler(async (req, res) => {
   try {
     const { name, description, price, category, quantity, brand } = req.fields;
+    const { image } = req.files || {};
+    // console.log(image);
 
-    // Validation
-    switch (true) {
-      case !name:
-        return res.json({ error: "Name is required" });
-      case !brand:
-        return res.json({ error: "Brand is required" });
-      case !description:
-        return res.json({ error: "Description is required" });
-      case !price:
-        return res.json({ error: "Price is required" });
-      case !category:
-        return res.json({ error: "Category is required" });
-      case !quantity:
-        return res.json({ error: "Quantity is required" });
+    const updatedData = {};
+    if (name) updatedData.name = name;
+    if (description) updatedData.description = description;
+    if (price) updatedData.price = price;
+    if (quantity) updatedData.quantity = quantity;
+    if (brand) updatedData.brand = brand;
+    if (category) updatedData.category = mongoose.Types.ObjectId(category);
+
+    if (image) {
+      updatedData.image = `/uploads/${image.originalFilename}`;
+      const uploadPath = `uploads/${image.originalFilename}`;
+      fs.renameSync(image.filepath, uploadPath);
     }
 
-    const product = await Product.findByIdAndUpdate(
-      req.params.id,
-      { ...req.fields },
-      { new: true }
-    );
-
-    await product.save();
+    const product = await Product.findByIdAndUpdate(req.params.id, updatedData, {
+      new: true,
+      runValidators: true,
+    });
 
     res.json(product);
   } catch (error) {
     console.error(error);
-    res.status(400).json(error.message);
+    res.status(400).json({ error: error.message });
   }
 });
+
+
 
 const removeProduct = asyncHandler(async (req, res) => {
   try {
