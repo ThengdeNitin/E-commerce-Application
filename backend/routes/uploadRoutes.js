@@ -1,42 +1,41 @@
-import path from "path";
 import express from "express";
-import multer from "multer";
-
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    const extname = path.extname(file.originalname);
-    cb(null, `${file.fieldname}-${Date.now()}${extname}`);
-  },
-});
+import {
+  createUser,
+  loginUser,
+  logoutCurrentUser,
+  getAllUsers,
+  getCurrentUserProfile,
+  updateCurrentUserProfile,
+  deleteUserById,
+  getUserById,
+  updateUserById,
+} from "../controllers/userController.js";
 
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpe?g|png|webp/;
-  const allowedMime = /image\/jpe?g|image\/png|image\/webp/;
+import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
+import checkId from "../middlewares/checkId.js";
 
-  const ext = path.extname(file.originalname).toLowerCase();
-  if (allowedTypes.test(ext) && allowedMime.test(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Images only!"), false);
-  }
-};
+// Public routes
+router.post("/", createUser); // Register
+router.post("/auth", loginUser); // Login
+router.post("/logout", authenticate, logoutCurrentUser); // Logout
 
-const upload = multer({ storage, fileFilter });
+// User profile routes
+router
+  .route("/profile")
+  .get(authenticate, getCurrentUserProfile)
+  .put(authenticate, updateCurrentUserProfile);
 
-router.post("/", upload.single("image"), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No image file provided" });
-  }
+// Admin routes
+router
+  .route("/:id")
+  .all(authenticate, authorizeAdmin, checkId) // Apply once
+  .get(getUserById)
+  .put(updateUserById)
+  .delete(deleteUserById);
 
-  res.status(200).json({
-    message: "Image uploaded successfully",
-    image: `/${req.file.path}`,
-  });
-});
+// Admin: get all users
+router.get("/", authenticate, authorizeAdmin, getAllUsers);
 
 export default router;

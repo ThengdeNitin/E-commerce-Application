@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useCreateProductMutation,
@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import AdminMenu from "./AdminMenu";
 
 const ProductList = () => {
-  const [image, setImage] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -17,51 +17,67 @@ const ProductList = () => {
   const [quantity, setQuantity] = useState("");
   const [brand, setBrand] = useState("");
   const [stock, setStock] = useState(0);
-  const [imageUrl, setImageUrl] = useState(null);
 
   const navigate = useNavigate();
 
-  const [uploadProductImage] = useUploadProductImageMutation();
-  const [createProduct] = useCreateProductMutation();
+  const [uploadProductImage, { isLoading: uploading }] =
+    useUploadProductImageMutation();
+  const [createProduct, { isLoading: creating }] = useCreateProductMutation();
   const { data: categories } = useFetchCategoriesQuery();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const uploadFileHandler = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
   
     try {
-      const productData = {
-        name,
-        image, 
-        description,
-        price,
-        category,
-        quantity,
-        brand,
-        countInStock: stock,
-      };
+      const formData = new FormData();
+      formData.append("image", file);
   
-      const res = await createProduct(productData);
-      toast.success(`${res.name} created successfully`);
-      navigate("/"); 
-    } catch (error) {
-      console.error(error);
-      toast.error(error?.data?.error || "Failed to create product");
+      const res = await uploadProductImage(formData).unwrap();
+  
+      toast.success(res.message || "Uploaded");
+  
+      let imgUrl = res.image;
+      if (!imgUrl.startsWith("/")) {
+        imgUrl = `/${imgUrl.replace(/\\/g, "/")}`;
+      }
+  
+      setImageUrl(imgUrl);
+    } catch (err) {
+      console.error("upload error:", err);
+      toast.error(err?.data?.message || "Image upload failed");
     }
   };
   
-  
 
-  const uploadFileHandler = async (e) => {
-    const formData = new FormData();
-    formData.append("image", e.target.files[0]);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!imageUrl) return toast.error("Please upload an image first");
+    if (!name || !price || !category || !brand)
+      return toast.error("Please fill required fields");
+
+    const payload = {
+      name: name.trim(),
+      description: description.trim(),
+      price: Number(price),
+      category,
+      quantity: Number(quantity || 0),
+      brand: brand.trim(),
+      countInStock: Number(stock || 0),
+      image: imageUrl,
+    };
 
     try {
-      const res = await uploadProductImage(formData).unwrap();
-      toast.success(res.message);
-      setImage(res.image); 
-      setImageUrl(res.image); 
-    } catch (error) {
-      toast.error(error?.data?.message || error.error);
+      const res = await createProduct(payload).unwrap();
+      toast.success(`${res.name} created successfully`);
+
+      navigate("/admin/productlist");
+      window.location.reload();
+    } catch (err) {
+      console.error("create error:", err);
+      const msg = err?.data?.error || err?.error || JSON.stringify(err);
+      toast.error(msg);
     }
   };
 
@@ -70,12 +86,16 @@ const ProductList = () => {
       <div className="flex flex-col md:flex-row">
         <AdminMenu />
         <div className="md:w-3/4 p-3">
-          <div className="h-12">Create Product</div>
+          <h2 className="h-12 font-bold text-xl mb-5">Create Product</h2>
 
           {imageUrl && (
-            <div className="text-center">
+            <div className="text-center mb-4">
               <img
-                src={imageUrl}
+                src={
+                  imageUrl.startsWith("http")
+                    ? imageUrl
+                    : `${window.location.origin}${imageUrl}`
+                }
                 alt="product"
                 className="block mx-auto max-h-[200px]"
               />
@@ -84,7 +104,7 @@ const ProductList = () => {
 
           <div className="mb-3">
             <label className="border text-white px-4 block w-full text-center rounded-lg cursor-pointer font-bold py-11">
-              {image ? "Image Selected" : "Upload Image"}
+              {imageUrl ? "Image Selected" : "Upload Image"}
               <input
                 type="file"
                 name="image"
@@ -95,74 +115,71 @@ const ProductList = () => {
             </label>
           </div>
 
-          <div className="p-3">
-            <div className="flex flex-wrap">
-              <div className="one">
-                <label htmlFor="name">Name</label> <br />
+          <form className="p-3" onSubmit={handleSubmit}>
+            <div className="flex flex-wrap gap-10">
+              <div className="flex-1">
+                <label>Name</label>
                 <input
                   type="text"
-                  className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] text-white"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
-              <div className="two ml-10 ">
-                <label htmlFor="price">Price</label> <br />
+              <div className="flex-1">
+                <label>Price</label>
                 <input
                   type="number"
-                  className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] text-white"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                 />
               </div>
             </div>
 
-            <div className="flex flex-wrap">
-              <div className="one">
-                <label htmlFor="quantity">Quantity</label> <br />
+            <div className="flex flex-wrap gap-10">
+              <div className="flex-1">
+                <label>Quantity</label>
                 <input
                   type="number"
-                  className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] text-white"
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                 />
               </div>
-              <div className="two ml-10 ">
-                <label htmlFor="brand">Brand</label> <br />
+              <div className="flex-1">
+                <label>Brand</label>
                 <input
                   type="text"
-                  className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] text-white"
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
                 />
               </div>
             </div>
 
-            <label htmlFor="description" className="my-5">
-              Description
-            </label>
+            <label>Description</label>
             <textarea
-              id="description"
-              className="p-2 mb-3 bg-[#101011] border rounded-lg w-[95%] text-white"
+              className="p-2 mb-3 bg-[#101011] border rounded-lg w-full text-white"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-            ></textarea>
+            />
 
-            <div className="flex justify-between">
-              <div>
-                <label htmlFor="stock">Count In Stock</label> <br />
+            <div className="flex flex-wrap gap-10 mt-3">
+              <div className="flex-1">
+                <label>Count In Stock</label>
                 <input
                   type="number"
-                  className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] text-white"
                   value={stock}
                   onChange={(e) => setStock(e.target.value)}
                 />
               </div>
-
-              <div>
-                <label htmlFor="category">Category</label> <br />
+              <div className="flex-1">
+                <label>Category</label>
                 <select
-                  className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] text-white"
+                  value={category}
                   onChange={(e) => setCategory(e.target.value)}
                 >
                   <option value="">Select category</option>
@@ -176,12 +193,12 @@ const ProductList = () => {
             </div>
 
             <button
-              onClick={handleSubmit}
+              type="submit"
               className="py-4 px-10 mt-5 rounded-lg text-lg font-bold bg-pink-600"
             >
-              Submit
+              {creating ? "Creating..." : "Submit"}
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </div>

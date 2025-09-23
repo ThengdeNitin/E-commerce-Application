@@ -1,5 +1,5 @@
 import { apiSlice } from "./apiSlice";
-import { ORDERS_URL, PAYPAL_URL } from "../constants";
+import { BASE_URL,ORDERS_URL, PAYPAL_URL } from "../constants";
 
 export const orderApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,13 +13,13 @@ export const orderApiSlice = apiSlice.injectEndpoints({
 
     getOrderDetails: builder.query({
       query: (id) => ({
-        url: `${ORDERS_URL}/${id}`,
+        url: `${BASE_URL}${ORDERS_URL}/${id}`,
       }),
     }),
 
     payOrder: builder.mutation({
       query: ({ orderId, details }) => ({
-        url: `${ORDERS_URL}/${orderId}/pay`,
+        url: `${BASE_URL}${ORDERS_URL}/${orderId}/pay`,
         method: "PUT",
         body: details,
       }),
@@ -33,7 +33,7 @@ export const orderApiSlice = apiSlice.injectEndpoints({
 
     getMyOrders: builder.query({
       query: () => ({
-        url: `${ORDERS_URL}/mine`,
+        url: `${BASE_URL}${ORDERS_URL}/mine`,
       }),
       keepUnusedDataFor: 5,
     }),
@@ -46,21 +46,21 @@ export const orderApiSlice = apiSlice.injectEndpoints({
 
     deliverOrder: builder.mutation({
       query: (orderId) => ({
-        url: `${ORDERS_URL}/${orderId}/deliver`,
+        url: `${BASE_URL}${ORDERS_URL}/${orderId}/deliver`,
         method: "PUT",
       }),
     }),
 
     getTotalOrders: builder.query({
-      query: () => `${ORDERS_URL}/total-orders`,
+      query: () => `${BASE_URL}${ORDERS_URL}/total-orders`,
     }),
 
     getTotalSales: builder.query({
-      query: () => `${ORDERS_URL}/total-sales`,
+      query: () => `${BASE_URL}${ORDERS_URL}/total-sales`,
     }),
 
     getTotalSalesByDate: builder.query({
-      query: () => `${ORDERS_URL}/total-sales-by-date`,
+      query: () => `${BASE_URL}${ORDERS_URL}/total-sales-by-date`,
     }),
   }),
 });
