@@ -6,17 +6,16 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 // utils
-import connectDB from "./config/db.js";
-import userRoutes from "./routes/userRoutes.js";
-import categoryRoutes from "./routes/categoryRoutes.js";
-import productRoutes from "./routes/productRoutes.js";
-import uploadRoutes from "./routes/uploadRoutes.js";
-import orderRoutes from "./routes/orderRoutes.js";
+import connectDB from "../config/db.js";
+import userRoutes from "../routes/userRoutes.js";
+import categoryRoutes from "../routes/categoryRoutes.js";
+import productRoutes from "../routes/productRoutes.js";
+import uploadRoutes from "../routes/uploadRoutes.js";
+import orderRoutes from "../routes/orderRoutes.js";
 
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 5000;
 
 // Connect to DB
 connectDB();
@@ -27,10 +26,10 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// CORS setup
+// CORS setup (⚠️ update origin when deploying frontend)
 app.use(
   cors({
-    origin: "http://localhost:5173", 
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Accept"],
@@ -41,7 +40,7 @@ app.use(
 app.use((req, res, next) => {
   const contentType = req.headers["content-type"];
   if (contentType && contentType.startsWith("multipart/form-data")) {
-    return next(); // skip express.json for file uploads
+    return next();
   }
   express.json()(req, res, next);
 });
@@ -70,5 +69,5 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-// Start server
-app.listen(port, () => console.log(`Server running on port: ${port}`));
+// ✅ Important: Export app for Vercel
+export default app;
