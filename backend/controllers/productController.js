@@ -4,34 +4,32 @@ import mongoose from "mongoose";
 import path from "path";
 import fs from "fs";
 
-// Helper to get request body
 const getFields = (req) => req.body || {};
 
-/**
- * UPLOAD PRODUCT IMAGE
- * Expects a multipart/form-data request with 'image' field
- */
 const uploadProductImage = asyncHandler(async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "Please fill all the inputs." });
   }
+  
+  const datetime = new Date().toISOString().replace(/[-:.TZ]/g, "");
+  const originalName = path.parse(req.file.originalname).name;
+  const ext = path.extname(req.file.originalname);
+  const newFileName = `image_${datetime}_${originalName}${ext}`;
+  const newPath = path.join(req.file.destination, newFileName);
 
-  // Move file to /uploads folder (already done by multer if configured with dest)
-  const filePath = `/uploads/${req.file.filename}`;
+  fs.renameSync(req.file.path, newPath);
+
+  const filePath = `/uploads/${newFileName}`;
 
   res.status(201).json({
     message: "File uploaded successfully",
-    image: filePath,
+    image: filePath.replace(/\\/g, "/"), 
   });
 });
 
-/**
- * ADD a new product
- */
 const addProduct = asyncHandler(async (req, res) => {
   const { name, description, price, category, quantity, brand, image, countInStock } = getFields(req);
 
-  // Validation
   if (!name) return res.status(400).json({ error: "Name is required" });
   if (!brand) return res.status(400).json({ error: "Brand is required" });
   if (!description) return res.status(400).json({ error: "Description is required" });
@@ -55,39 +53,66 @@ const addProduct = asyncHandler(async (req, res) => {
   res.status(201).json(createdProduct);
 });
 
-/**
- * UPDATE product by ID
- */
-const updateProductDetails = asyncHandler(async (req, res) => {
-  const fields = getFields(req);
-  const product = await Product.findById(req.params.id);
-  if (!product) return res.status(404).json({ error: "Product not found" });
 
-  if (fields.name !== undefined) product.name = String(fields.name).trim();
-  if (fields.description !== undefined) product.description = String(fields.description).trim();
-  if (fields.price !== undefined) product.price = Number(fields.price);
-  if (fields.category) product.category = new mongoose.Types.ObjectId(fields.category);
-  if (fields.quantity !== undefined) product.quantity = Number(fields.quantity);
-  if (fields.brand !== undefined) product.brand = String(fields.brand).trim();
-  if (fields.countInStock !== undefined) product.countInStock = Number(fields.countInStock);
-  if (fields.image !== undefined) product.image = String(fields.image);
+// const updateProductDetails = asyncHandler(async (req, res) => {
+//   const fields = getFields(req);
+//   const product = await Product.findById(req.params.id);
+//   if (!product) return res.status(404).json({ error: "Product not found" });
+
+//   if (fields.name !== undefined) product.name = String(fields.name).trim();
+//   if (fields.description !== undefined) product.description = String(fields.description).trim();
+//   if (fields.price !== undefined) product.price = Number(fields.price);
+//   if (fields.category) product.category = new mongoose.Types.ObjectId(fields.category);
+//   if (fields.quantity !== undefined) product.quantity = Number(fields.quantity);
+//   if (fields.brand !== undefined) product.brand = String(fields.brand).trim();
+//   if (fields.countInStock !== undefined) product.countInStock = Number(fields.countInStock);
+//   if (fields.image !== undefined) product.image = String(fields.image);
+
+//   const updatedProduct = await product.save();
+//   res.json(updatedProduct);
+// });
+
+const updateProductDetails = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  // Validate ID
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: "Invalid product ID" });
+  }
+
+  const { name, description, price, category, quantity, brand, image, countInStock } = req.body;
+
+  // Find product
+  const product = await Product.findById(id);
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+
+  // Update fields if provided, otherwise keep old values
+  product.name = name ? String(name).trim() : product.name;
+  product.description = description ? String(description).trim() : product.description;
+  product.price = price !== undefined && price !== null ? Number(price) : product.price;
+  product.category = category ? new mongoose.Types.ObjectId(category) : product.category;
+  product.quantity = quantity !== undefined && quantity !== null ? Number(quantity) : product.quantity;
+  product.brand = brand ? String(brand).trim() : product.brand;
+  product.image = image ? String(image) : product.image;
+  product.countInStock = countInStock !== undefined && countInStock !== null ? Number(countInStock) : product.countInStock;
 
   const updatedProduct = await product.save();
-  res.json(updatedProduct);
+
+  res.status(200).json({
+    message: "Product updated successfully",
+    product: updatedProduct,
+  });
 });
 
-/**
- * DELETE product
- */
+
 const removeProduct = asyncHandler(async (req, res) => {
   const product = await Product.findByIdAndDelete(req.params.id);
   if (!product) return res.status(404).json({ error: "Product not found" });
   res.json({ message: "Product deleted", product });
 });
 
-/**
- * GET products with pagination & search
- */
 const fetchProducts = asyncHandler(async (req, res) => {
   const pageSize = 6;
   const page = Number(req.query.page) || 1;
@@ -109,29 +134,21 @@ const fetchProducts = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * GET product by ID
- */
+
 const fetchProductById = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id).populate("category");
   if (!product) return res.status(404).json({ error: "Product not found" });
   res.json(product);
 });
 
-/**
- * GET latest products (limit 12)
- */
+
 const fetchAllProducts = asyncHandler(async (req, res) => {
   const products = await Product.find({})
     .populate("category")
-    .limit(12)
     .sort({ createdAt: -1 });
   res.json(products);
 });
 
-/**
- * Add product review
- */
 const addProductReview = asyncHandler(async (req, res) => {
   const { rating, comment } = req.body;
   const product = await Product.findById(req.params.id);
@@ -158,26 +175,17 @@ const addProductReview = asyncHandler(async (req, res) => {
   res.status(201).json({ message: "Review added" });
 });
 
-/**
- * GET top products (by rating)
- */
+
 const fetchTopProducts = asyncHandler(async (req, res) => {
   const products = await Product.find({}).sort({ rating: -1 }).limit(4);
   res.json(products);
 });
 
-/**
- * GET newest products
- */
 const fetchNewProducts = asyncHandler(async (req, res) => {
   const products = await Product.find().sort({ _id: -1 }).limit(5);
   res.json(products);
 });
 
-/**
- * FILTER products
- * JSON body: { checked: [categoryIds], radio: [minPrice, maxPrice] }
- */
 const filterProducts = asyncHandler(async (req, res) => {
   const { checked = [], radio = [] } = req.body;
   let filter = {};
@@ -188,30 +196,8 @@ const filterProducts = asyncHandler(async (req, res) => {
   res.json(products);
 });
 
-
-const uploadController = asyncHandler(async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "Please fill all the inputs." });
-  }
-
-  // Optional: rename the file to keep the original extension
-  const ext = path.extname(req.file.originalname);
-  const newPath = path.join(req.file.destination, `${req.file.filename}${ext}`);
-  fs.renameSync(req.file.path, newPath);
-
-  // Send relative path for frontend
-  const imagePath = `${req.file.destination}/${req.file.filename}${ext}`;
-  res.status(201).json({
-    message: "Image uploaded successfully",
-    image: imagePath.replace(/\\/g, "/"), // fix windows backslashes
-  });
-});
-
-export { uploadController };
-
-
 export {
-  uploadProductImage, // <-- added this
+  uploadProductImage,
   addProduct,
   updateProductDetails,
   removeProduct,

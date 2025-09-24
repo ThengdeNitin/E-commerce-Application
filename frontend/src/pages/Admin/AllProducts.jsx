@@ -15,77 +15,61 @@ const AllProducts = () => {
   }
 
   return (
-    <>
-      <div className="container mx-[9rem]">
-        <div className="flex flex-col  md:flex-row">
-          <div className="p-3">
-            <div className="ml-[2rem] text-xl font-bold h-12">
-              All Products ({products.length})
-            </div>
-            <div className="flex flex-wrap justify-around items-center">
-              {products.map((product) => (
-                <Link
-                  key={product._id}
-                  to={`/admin/product/update/${product._id}`}
-                  className="block mb-4 overflow-hidden"
-                >
-                  <div className="flex">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-[10rem] object-cover"
-                    />
-                    <div className="p-4 flex flex-col justify-around">
-                      <div className="flex justify-between">
-                        <h5 className="text-xl font-semibold mb-2">
-                          {product?.name}
-                        </h5>
+    <div className="container mx-auto px-6 py-6">
+      <div className="flex flex-col md:flex-row gap-6">
+          <AdminMenu />
 
-                        <p className="text-gray-400 text-xs">
-                          {moment(product.createdAt).format("MMMM Do YYYY")}
-                        </p>
-                      </div>
+        <div className="md:w-4/4">
+          <h2 className="text-2xl font-bold mb-6">
+            All Products ({products.length})
+          </h2>
 
-                      <p className="text-gray-400 xl:w-[30rem] lg:w-[30rem] md:w-[20rem] sm:w-[10rem] text-sm mb-4">
-                        {product?.description?.substring(0, 160)}...
-                      </p>
+          <div className="grid grid-cols- sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product) => (
+              <div
+                key={product._id}
+                className="bg-[#1a1a1a] rounded-xl shadow-md overflow-hidden flex flex-col"
+              >
+                {/* Product Image */}
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-48 object-cover"
+                />
 
-                      <div className="flex justify-between">
-                        <Link
-                          to={`/admin/product/update/${product._id}`}
-                          className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-pink-700 rounded-lg hover:bg-pink-800 focus:ring-4 focus:outline-none focus:ring-pink-300 dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800"
-                        >
-                          Update Product
-                          <svg
-                            className="w-3.5 h-3.5 ml-2"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 14 10"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M1 5h12m0 0L9 1m4 4L9 9"
-                            />
-                          </svg>
-                        </Link>
-                        <p>$ {product?.price}</p>
-                      </div>
-                    </div>
+                {/* Product Content */}
+                <div className="p-4 flex flex-col flex-grow">
+                  <div className="flex justify-between items-center mb-2">
+                    <h5 className="text-lg font-semibold truncate">
+                      {product.name}
+                    </h5>
+                    <span className="text-gray-400 text-xs">
+                      {moment(product.createdAt).format("MMM Do YYYY")}
+                    </span>
                   </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-          <div className="md:w-1/4 p-3 mt-2">
-            <AdminMenu />
+
+                  <p className="text-gray-400 text-sm mb-4 line-clamp-3">
+                    {product.description}
+                  </p>
+
+                  <div className="mt-auto flex justify-between items-center">
+                    <Link
+                      to={`/admin/product/update/${product._id}`}
+                      className="px-3 py-2 text-sm font-medium text-white bg-pink-600 rounded-lg hover:bg-pink-700 transition"
+                    >
+                      Update
+                    </Link>
+                    <span className="text-white font-bold">
+                      ${product.price}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -38,28 +38,27 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="w-full bg-[#000] text-white shadow-md sticky top-0 z-50">
+    <nav className="w-full bg-gradient-to-r from-pink-500 to-purple-700 shadow-md sticky top-0 z-50 text-white">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
-        {/* LEFT SECTION */}
         <div className="flex items-center space-x-6">
-          <Link to="/" className="flex items-center hover:text-pink-500">
+          <Link to="/" className="flex items-center hover:text-orange-300">
             <AiOutlineHome size={22} className="mr-1" />
             <span className="hidden md:inline">HOME</span>
           </Link>
 
-          <Link to="/shop" className="flex items-center hover:text-pink-500">
+          <Link to="/shop" className="flex items-center hover:text-orange-300">
             <AiOutlineShopping size={22} className="mr-1" />
             <span className="hidden md:inline">SHOP</span>
           </Link>
 
           <Link
             to="/cart"
-            className="relative flex items-center hover:text-pink-500"
+            className="relative flex items-center hover:text-orange-300"
           >
             <AiOutlineShoppingCart size={22} className="mr-1" />
             <span className="hidden md:inline">CART</span>
             {cartItems.length > 0 && (
-              <span className="absolute -top-2 -right-3 px-2 text-xs text-white bg-pink-500 rounded-full">
+              <span className="absolute -top-2 -right-3 px-2 text-xs text-white hover:text-orange-300 rounded-full">
                 {cartItems.reduce((a, c) => a + c.qty, 0)}
               </span>
             )}
@@ -67,7 +66,7 @@ const Navigation = () => {
 
           <Link
             to="/favorite"
-            className="flex items-center hover:text-pink-500"
+            className="flex items-center hover:text-orange-300"
           >
             <FaHeart size={20} className="mr-1" />
             <span className="hidden md:inline">FAVORITES</span>
@@ -75,13 +74,12 @@ const Navigation = () => {
           </Link>
         </div>
 
-        {/* RIGHT SECTION */}
         <div className="relative">
           {userInfo ? (
             <>
               <button
                 onClick={toggleDropdown}
-                className="flex items-center space-x-1 hover:text-pink-500 focus:outline-none"
+                className="flex items-center space-x-1 hover:text-orange-300 focus:outline-none"
               >
                 <span>{userInfo.username}</span>
                 <svg
@@ -169,7 +167,7 @@ const Navigation = () => {
             <div className="flex space-x-6">
               <Link
                 to="/login"
-                className="flex items-center hover:text-pink-500"
+                className="flex items-center hover:text-orange-300"
               >
                 <AiOutlineLogin size={22} className="mr-1" />
                 <span className="hidden md:inline">LOGIN</span>
@@ -183,15 +181,13 @@ const Navigation = () => {
               </Link>
             </div>
           )}
-
-          {/* ✅ Only show AdminMenu if user is admin */}
-          {userInfo?.isAdmin && (
-            <div className="mt-2">
+        </div>
+      </div>
+      {userInfo?.isAdmin && (
+            <div className="">
               <AdminMenu />
             </div>
           )}
-        </div>
-      </div>
     </nav>
   );
 };

@@ -35,8 +35,9 @@ router.post("/", authenticate, authorizeAdmin, addProduct);
 router
   .route("/:id")
   .get(fetchProductById)
-  .put(authenticate, authorizeAdmin, updateProductDetails)
+  .put(authenticate, authorizeAdmin, updateProductDetails) 
   .delete(authenticate, authorizeAdmin, removeProduct);
+
 
 router.post("/:id/reviews", authenticate, checkId, addProductReview);
 router.post("/filtered-products", filterProducts);
