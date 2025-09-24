@@ -15,7 +15,9 @@ export const productApiSlice = apiSlice.injectEndpoints({
     // Fetch single product by ID
     getProductById: builder.query({
       query: (productId) => `${PRODUCT_URL}/${productId}`,
-      providesTags: (result, error, productId) => [{ type: "Product", id: productId }],
+      providesTags: (result, error, productId) => [
+        { type: "Product", id: productId },
+      ],
     }),
 
     // Fetch all products
@@ -49,10 +51,10 @@ export const productApiSlice = apiSlice.injectEndpoints({
     updateProduct: builder.mutation({
       query: ({ productId, ...data }) => ({
         url: `/api/products/${productId}`,
-        method: 'PUT',
+        method: "PUT",
         body: data,
       }),
-    }),    
+    }),
 
     // Delete product
     deleteProduct: builder.mutation({
@@ -63,14 +65,16 @@ export const productApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Products"],
     }),
 
-    // Create review for a product
+    // productApiSlice.js
     createReview: builder.mutation({
       query: ({ productId, review }) => ({
-        url: `${PRODUCT_URL}/${productId}/reviews`,
+        url: `/api/products/${productId}/reviews`,
         method: "POST",
         body: review,
       }),
-      invalidatesTags: (result, error, { productId }) => [{ type: "Product", id: productId }],
+      invalidatesTags: (result, error, { productId }) => [
+        { type: "Product", id: productId },
+      ],
     }),
 
     // Get top products

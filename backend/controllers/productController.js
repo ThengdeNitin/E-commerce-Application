@@ -175,7 +175,6 @@ const addProductReview = asyncHandler(async (req, res) => {
   res.status(201).json({ message: "Review added" });
 });
 
-
 const fetchTopProducts = asyncHandler(async (req, res) => {
   const products = await Product.find({}).sort({ rating: -1 }).limit(4);
   res.json(products);
