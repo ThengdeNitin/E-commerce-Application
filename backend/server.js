@@ -4,6 +4,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import serverless from "serverless-http";  // ✅ added
 
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -16,7 +17,7 @@ dotenv.config();
 
 const app = express();
 
-connectDB();
+await connectDB();
 
 const uploadsDir = path.join(path.resolve(), "uploads");
 if (!fs.existsSync(uploadsDir)) {
@@ -32,19 +33,14 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
-  const contentType = req.headers["content-type"];
-  if (contentType && contentType.startsWith("multipart/form-data")) {
-    return next();
-  }
-  express.json()(req, res, next);
-});
+// ✅ JSON body parsing
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(cookieParser());
 
 app.use("/uploads", express.static(uploadsDir));
 
+// ✅ API Routes
 app.use("/api/users", userRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/products", productRoutes);
@@ -59,7 +55,6 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// ❌ REMOVE app.listen()
+// ✅ Export for Vercel
+export default serverless(app);

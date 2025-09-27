@@ -12,12 +12,21 @@ const connectDB = async () => {
   }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(process.env.MONGO_URI, {
-      bufferCommands: false,
-      maxPoolSize: 10,
-    }).then((mongoose) => mongoose);
+    cached.promise = mongoose
+      .connect(process.env.MONGO_URI, {
+        bufferCommands: false,
+        maxPoolSize: 10,
+      })
+      .then((mongoose) => {
+        console.log("✅ Connected with Mongo");
+        return mongoose;
+      })
+      .catch((err) => {
+        console.error("❌ MongoDB connection error:", err);
+        throw err;
+      });
   }
-  console.log("Connected with Mongo");
+
   cached.conn = await cached.promise;
   return cached.conn;
 };
