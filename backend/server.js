@@ -2,7 +2,8 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import serverless from "serverless-http";
-import connectDB from "../config/db.js"; // note ../ because it's inside api/
+import connectDB from "../config/db.js";
+
 import userRoutes from "../routes/userRoutes.js";
 import categoryRoutes from "../routes/categoryRoutes.js";
 import productRoutes from "../routes/productRoutes.js";
@@ -29,17 +30,19 @@ app.use("/api/products", productRoutes);
 app.use("/api/uploads", uploadRoutes);
 app.use("/api/orders", orderRoutes);
 
+// PayPal config
 app.get("/api/config/paypal", (req, res) => {
   res.send({ clientId: process.env.PAYPAL_CLIENT_ID });
 });
 
+// Root route
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-// ✅ Serverless handler with DB connection inside
+// ✅ Serverless handler
 const handler = serverless(async (req, res) => {
-  await connectDB(); // connect inside the function
+  await connectDB(); // connect inside handler
   return app(req, res);
 });
 

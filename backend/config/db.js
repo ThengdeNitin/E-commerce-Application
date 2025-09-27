@@ -7,9 +7,7 @@ if (!cached) {
 }
 
 const connectDB = async () => {
-  if (cached.conn) {
-    return cached.conn;
-  }
+  if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
     cached.promise = mongoose
@@ -18,11 +16,11 @@ const connectDB = async () => {
         maxPoolSize: 10,
       })
       .then((mongoose) => {
-        console.log("✅ Connected with Mongo");
+        console.log("✅ MongoDB Connected");
         return mongoose;
       })
       .catch((err) => {
-        console.error("❌ MongoDB connection error:", err);
+        console.error("❌ MongoDB Connection Error:", err);
         throw err;
       });
   }
