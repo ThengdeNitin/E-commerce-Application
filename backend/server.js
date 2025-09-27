@@ -39,8 +39,8 @@ app.use((req, res, next) => {
   }
   express.json()(req, res, next);
 });
-
 app.use(express.urlencoded({ extended: true }));
+
 app.use(cookieParser());
 
 app.use("/uploads", express.static(uploadsDir));
@@ -59,4 +59,7 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-export default app;
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
