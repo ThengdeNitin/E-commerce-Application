@@ -25,8 +25,7 @@ app.use(cookieParser());
 
 // CORS setup for multiple environments
 const allowedOrigins = [
-  "http://localhost:5173", // local dev
-  process.env.FRONTEND_URL, // deployed frontend
+  process.env.FRONTEND_URL, 
 ];
 
 app.use(
