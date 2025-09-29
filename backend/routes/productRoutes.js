@@ -1,5 +1,4 @@
 import express from "express";
-import multer from "multer";
 import { 
   uploadProductImage,
   addProduct,
@@ -16,11 +15,11 @@ import {
 
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
 import checkId from "../middlewares/checkId.js";
+import { upload } from "../middlewares/multer.js";  // ✅ use your middleware
 
 const router = express.Router();
-const upload = multer({ dest: "uploads/" });
 
-// ✅ Upload image
+// ✅ Upload image to Cloudinary
 router.post("/uploads", upload.single("image"), uploadProductImage);
 
 // ✅ Public routes
@@ -35,9 +34,8 @@ router.post("/", authenticate, authorizeAdmin, addProduct);
 router
   .route("/:id")
   .get(fetchProductById)
-  .put(authenticate, authorizeAdmin, updateProductDetails) 
+  .put(authenticate, authorizeAdmin, updateProductDetails)
   .delete(authenticate, authorizeAdmin, removeProduct);
-
 
 router.post("/:id/reviews", authenticate, checkId, addProductReview);
 router.post("/filtered-products", filterProducts);

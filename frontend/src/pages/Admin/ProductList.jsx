@@ -39,7 +39,7 @@ const ProductList = () => {
   
       let imgUrl = res.image;
       if (!imgUrl.startsWith("/")) {
-        imgUrl = `/${imgUrl.replace(/\\/g, "/")}`;
+        imgUrl = `${imgUrl.replace(/\\/g, "/")}`;
       }
   
       setImageUrl(imgUrl);
@@ -121,7 +121,7 @@ const ProductList = () => {
                 <label>Name</label>
                 <input
                   type="text"
-                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] text-white"
+                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] !text-white"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -130,7 +130,7 @@ const ProductList = () => {
                 <label>Price</label>
                 <input
                   type="number"
-                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] text-white"
+                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] !text-white"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                 />
@@ -142,7 +142,7 @@ const ProductList = () => {
                 <label>Quantity</label>
                 <input
                   type="number"
-                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] text-white"
+                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] !text-white"
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                 />
@@ -151,7 +151,7 @@ const ProductList = () => {
                 <label>Brand</label>
                 <input
                   type="text"
-                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] text-white"
+                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] !text-white"
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
                 />
@@ -160,7 +160,7 @@ const ProductList = () => {
 
             <label>Description</label>
             <textarea
-              className="p-2 mb-3 bg-[#101011] border rounded-lg w-full text-white"
+              className="p-2 mb-3 bg-[#101011] border rounded-lg w-full !text-white"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -170,7 +170,7 @@ const ProductList = () => {
                 <label>Count In Stock</label>
                 <input
                   type="number"
-                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] text-white"
+                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] !text-white"
                   value={stock}
                   onChange={(e) => setStock(e.target.value)}
                 />
@@ -178,7 +178,7 @@ const ProductList = () => {
               <div className="flex-1">
                 <label>Category</label>
                 <select
-                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] text-white"
+                  className="p-4 mb-3 w-full border rounded-lg bg-[#101011] !text-white"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                 >

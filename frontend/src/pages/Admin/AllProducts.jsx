@@ -60,7 +60,7 @@ const AllProducts = () => {
                       Update
                     </Link>
                     <span className="text-white font-bold">
-                      ${product.price}
+                      ₹{product.price}
                     </span>
                   </div>
                 </div>

@@ -26,7 +26,7 @@ const Home = () => {
       title: "Electronics Mega Sale",
       subtitle: "Latest Gadgets at Best Prices",
       image:
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=1200&h=400&fit=crop",
+        "https://media.assettype.com/digitalterminal%2F2024-08-31%2Fr9yl1p1h%2FVijay-Sales.jpg?w=1200&h=400&fit=crop",
       cta: "Explore",
     },
     {
@@ -43,8 +43,17 @@ const Home = () => {
     <>
       {!keyword ? <Header /> : null}
 
-      <section className="relative h-96 bg-gradient-to-r from-purple-600 to-pink-600 overflow-hidden">
-        <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+      <section
+        className="relative h-96 overflow-hidden"
+        style={{
+          backgroundImage: `url(${heroSlides[currentSlide].image})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div className="absolute inset-0 bg-opacity-40"></div>
+
         <div className="relative container mx-auto px-4 h-full flex items-center">
           <div className="text-white z-10">
             <h1 className="text-5xl font-bold mb-4">

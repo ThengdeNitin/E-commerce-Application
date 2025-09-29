@@ -84,6 +84,7 @@ const AdminProductUpdate = () => {
 
       toast.success("Product updated successfully", { autoClose: 2000 });
       navigate("/admin/allproductslist");
+      window.location.reload();
     } catch (err) {
       console.log(err);
       toast.error("Product update failed", { autoClose: 2000 });
@@ -100,10 +101,15 @@ const AdminProductUpdate = () => {
       await deleteProduct(params._id).unwrap();
       toast.success("Product deleted successfully", { autoClose: 2000 });
       navigate("/admin/allproductslist");
+      window.location.reload();
     } catch (err) {
       console.log(err);
       toast.error("Delete failed", { autoClose: 2000 });
     }
+  };
+
+  const handleBack = () => {
+    navigate("/admin/allproductslist");
   };
 
   return (
@@ -131,14 +137,14 @@ const AdminProductUpdate = () => {
               <input
                 type="text"
                 placeholder="Name"
-                className="p-4 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                className="p-4 w-[30rem] border rounded-lg bg-[#101011] !text-white"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
               <input
                 type="number"
                 placeholder="Price"
-                className="p-4 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                className="p-4 w-[30rem] border rounded-lg bg-[#101011] !text-white"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
               />
@@ -148,14 +154,14 @@ const AdminProductUpdate = () => {
               <input
                 type="number"
                 placeholder="Quantity"
-                className="p-4 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                className="p-4 w-[30rem] border rounded-lg bg-[#101011] !text-white"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
               />
               <input
                 type="text"
                 placeholder="Brand"
-                className="p-4 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                className="p-4 w-[30rem] border rounded-lg bg-[#101011] !text-white"
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
               />
@@ -163,7 +169,7 @@ const AdminProductUpdate = () => {
 
             <textarea
               placeholder="Description"
-              className="p-4 w-full mt-3 border rounded-lg bg-[#101011] text-white"
+              className="p-4 w-full mt-3 border rounded-lg bg-[#101011] !text-white"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -172,12 +178,12 @@ const AdminProductUpdate = () => {
               <input
                 type="number"
                 placeholder="Count In Stock"
-                className="p-4 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                className="p-4 w-[30rem] border rounded-lg bg-[#101011] !text-white"
                 value={stock}
                 onChange={(e) => setStock(e.target.value)}
               />
               <select
-                className="p-4 w-[30rem] border rounded-lg bg-[#101011] text-white"
+                className="p-4 w-[30rem] border rounded-lg bg-[#101011] !text-white"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
@@ -196,6 +202,9 @@ const AdminProductUpdate = () => {
               </button>
               <button type="button" onClick={handleDelete} className="py-4 px-10 bg-pink-600 rounded-lg font-bold">
                 Delete
+              </button>
+              <button type="button" onClick={handleBack} className="py-4 px-10 bg-blue-500 rounded-lg font-bold">
+                Back
               </button>
             </div>
           </form>
