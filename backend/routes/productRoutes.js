@@ -15,20 +15,17 @@ import {
 
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
 import checkId from "../middlewares/checkId.js";
-import { upload } from "../middlewares/multer.js";  // ✅ use your middleware
+import { upload } from "../middlewares/multer.js"; 
 
 const router = express.Router();
 
-// ✅ Upload image to Cloudinary
 router.post("/uploads", upload.single("image"), uploadProductImage);
 
-// ✅ Public routes
 router.get("/", fetchProducts);
 router.get("/allproducts", fetchAllProducts);
 router.get("/top", fetchTopProducts);
 router.get("/new", fetchNewProducts);
 
-// ✅ Admin product CRUD
 router.post("/", authenticate, authorizeAdmin, addProduct);
 
 router
