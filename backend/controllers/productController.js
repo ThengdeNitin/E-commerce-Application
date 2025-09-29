@@ -38,29 +38,57 @@ const addProduct = asyncHandler(async (req, res) => {
 const updateProductDetails = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
+  // Validate product ID
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ error: "Invalid product ID" });
   }
 
-  const { name, description, price, category, quantity, brand, image, countInStock } = req.body;
-
+  // Find product
   const product = await Product.findById(id);
-  if (!product) return res.status(404).json({ error: "Product not found" });
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
+  }
 
+  // Destructure fields from request body
+  const {
+    name,
+    description,
+    price,
+    category,
+    quantity,
+    brand,
+    image,
+    countInStock,
+  } = req.body;
+
+  // Validate fields
+  if (name !== undefined && !name.trim()) return res.status(400).json({ error: "Name cannot be empty" });
+  if (brand !== undefined && !brand.trim()) return res.status(400).json({ error: "Brand cannot be empty" });
+  if (price !== undefined && isNaN(price)) return res.status(400).json({ error: "Price must be a number" });
+  if (quantity !== undefined && isNaN(quantity)) return res.status(400).json({ error: "Quantity must be a number" });
+  if (countInStock !== undefined && isNaN(countInStock)) return res.status(400).json({ error: "CountInStock must be a number" });
+  if (category && !mongoose.Types.ObjectId.isValid(category)) return res.status(400).json({ error: "Invalid category ID" });
+
+  // Update fields only if provided
   product.name = name ? name.trim() : product.name;
   product.description = description ? description.trim() : product.description;
-  product.price = price !== undefined && price !== null ? Number(price) : product.price;
+  product.price = price !== undefined ? Number(price) : product.price;
   product.category = category ? new mongoose.Types.ObjectId(category) : product.category;
-  product.quantity = quantity !== undefined && quantity !== null ? Number(quantity) : product.quantity;
+  product.quantity = quantity !== undefined ? Number(quantity) : product.quantity;
   product.brand = brand ? brand.trim() : product.brand;
   product.image = image ? image : product.image; // Cloudinary URL
-  product.countInStock = countInStock !== undefined && countInStock !== null ? Number(countInStock) : product.countInStock;
+  product.countInStock = countInStock !== undefined ? Number(countInStock) : product.countInStock;
 
-  const updatedProduct = await product.save();
-  res.status(200).json({
-    message: "Product updated successfully",
-    product: updatedProduct,
-  });
+  try {
+    const updatedProduct = await product.save();
+    res.status(200).json({
+      message: "Product updated successfully",
+      product: updatedProduct,
+    });
+  } catch (err) {
+    console.error("Error updating product:", err.message);
+    res.status(500).json({ error: "Failed to update product" });
+  }
 });
 
 const removeProduct = asyncHandler(async (req, res) => {

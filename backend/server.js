@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config(); // must be first
+dotenv.config(); // Must be first
 
 import express from "express";
 import cookieParser from "cookie-parser";
@@ -16,6 +16,7 @@ import orderRoutes from "./routes/orderRoutes.js";
 
 const app = express();
 
+// Connect to database
 connectDB();
 
 // Middleware
@@ -23,27 +24,27 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// CORS setup for multiple environments
+// CORS setup for local dev and deployed frontend
 const allowedOrigins = [
-  "http://localhost:5173", // local dev
-  process.env.FRONTEND_URL, // deployed frontend
+  "http://localhost:5173",          // Local frontend
+  process.env.FRONTEND_URL || "",   // Deployed frontend
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like Postman) or valid origins
+      // Allow requests with no origin (Postman) or valid origins
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("Not allowed by CORS"));
+        callback(new Error(`CORS policy: Origin ${origin} not allowed`));
       }
     },
     credentials: true,
   })
 );
 
-// API Routes
+// API routes
 app.use("/api/users", userRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/products", productRoutes);
@@ -58,6 +59,17 @@ app.get("/api/config/paypal", (req, res) => {
 // Root route
 app.get("/", (req, res) => {
   res.send("API is running...");
+});
+
+// Error handling for unknown routes
+app.use((req, res, next) => {
+  res.status(404).json({ message: "Route not found" });
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: err.message || "Server Error" });
 });
 
 // Start server
