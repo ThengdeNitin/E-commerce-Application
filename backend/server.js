@@ -23,7 +23,7 @@ app.use(cookieParser());
 
 const allowedOrigins = [
   "http://localhost:5173",          
-  process.env.FRONTEND_URL || "", 
+  "https://ecommerce-application-frontend-mu.vercel.app", 
 ];
 
 app.use(
