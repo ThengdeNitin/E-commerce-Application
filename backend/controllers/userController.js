@@ -52,18 +52,21 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new Error("Invalid email or password");
   }
 
+  // 🔑 Sign JWT
   const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, {
     expiresIn: "30d",
   });
 
+  // 🔑 Send token in response (frontend stores in localStorage)
   res.status(200).json({
     _id: existingUser._id,
     username: existingUser.username,
     email: existingUser.email,
     isAdmin: existingUser.isAdmin,
-    token, 
+    token,
   });
 });
+
 
 const logoutCurrentUser = asyncHandler(async (req, res) => {
   res.cookie("jwt", "", {
