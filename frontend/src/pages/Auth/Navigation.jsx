@@ -5,6 +5,8 @@ import {
   AiOutlineLogin,
   AiOutlineUserAdd,
   AiOutlineShoppingCart,
+  AiOutlineMenu,
+  AiOutlineClose,
 } from "react-icons/ai";
 import { FaHeart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -19,12 +21,13 @@ const Navigation = () => {
   const { cartItems } = useSelector((state) => state.cart);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
+  const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const [logoutApiCall] = useLogoutMutation();
 
   const logoutHandler = async () => {
@@ -39,42 +42,39 @@ const Navigation = () => {
 
   return (
     <nav className="w-full bg-gradient-to-r from-pink-500 to-purple-700 shadow-md sticky top-0 z-50 text-white">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
-        <div className="flex items-center space-x-6">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3 md:px-6">
+        <div className="flex items-center space-x-4">
           <Link to="/" className="flex items-center hover:text-orange-300">
             <AiOutlineHome size={22} className="mr-1" />
-            <span className="hidden md:inline">HOME</span>
+            <span className="hidden sm:inline">HOME</span>
           </Link>
-
           <Link to="/shop" className="flex items-center hover:text-orange-300">
             <AiOutlineShopping size={22} className="mr-1" />
-            <span className="hidden md:inline">SHOP</span>
+            <span className="hidden sm:inline">SHOP</span>
           </Link>
-
           <Link
             to="/cart"
             className="relative flex items-center hover:text-orange-300"
           >
             <AiOutlineShoppingCart size={22} className="mr-1" />
-            <span className="hidden md:inline">CART</span>
+            <span className="hidden sm:inline">CART</span>
             {cartItems.length > 0 && (
-              <span className="absolute -top-2 -right-3 px-2 text-xs text-white hover:text-orange-300 rounded-full">
+              <span className="absolute -top-2 -right-2 px-2 text-xs text-white rounded-full bg-red-600">
                 {cartItems.reduce((a, c) => a + c.qty, 0)}
               </span>
             )}
           </Link>
-
           <Link
             to="/favorite"
             className="flex items-center hover:text-orange-300"
           >
             <FaHeart size={20} className="mr-1" />
-            <span className="hidden md:inline">FAVORITES</span>
+            <span className="hidden sm:inline">FAVORITES</span>
             <FavoritesCount />
           </Link>
         </div>
 
-        <div className="relative">
+        <div className="hidden md:flex items-center space-x-4 relative">
           {userInfo ? (
             <>
               <button
@@ -99,7 +99,7 @@ const Navigation = () => {
               </button>
 
               {dropdownOpen && (
-                <ul className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow-lg">
+                <ul className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow-lg z-50">
                   {userInfo.isAdmin && (
                     <>
                       <li>
@@ -164,30 +164,78 @@ const Navigation = () => {
               )}
             </>
           ) : (
-            <div className="flex space-x-6">
+            <div className="flex space-x-4">
               <Link
                 to="/login"
                 className="flex items-center hover:text-orange-300"
               >
                 <AiOutlineLogin size={22} className="mr-1" />
-                <span className="hidden md:inline">LOGIN</span>
+                <span>LOGIN</span>
               </Link>
               <Link
                 to="/register"
                 className="flex items-center hover:text-pink-500"
               >
                 <AiOutlineUserAdd size={22} className="mr-1" />
-                <span className="hidden md:inline">REGISTER</span>
+                <span>REGISTER</span>
               </Link>
             </div>
           )}
         </div>
+
+        <button
+          onClick={toggleMobileMenu}
+          className="md:hidden flex items-center focus:outline-none"
+        >
+          {mobileMenuOpen ? <AiOutlineClose size={24} /> : <AiOutlineMenu size={24} />}
+        </button>
       </div>
-      {userInfo?.isAdmin && (
-            <div className="">
-              <AdminMenu />
-            </div>
+
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-gray-800 text-white px-4 py-4 space-y-3">
+          <Link to="/" className="flex items-center hover:text-orange-300">
+            <AiOutlineHome className="mr-2" /> Home
+          </Link>
+          <Link to="/shop" className="flex items-center hover:text-orange-300">
+            <AiOutlineShopping className="mr-2" /> Shop
+          </Link>
+          <Link to="/cart" className="flex items-center hover:text-orange-300 relative">
+            <AiOutlineShoppingCart className="mr-2" /> Cart
+            {cartItems.length > 0 && (
+              <span className="absolute -top-2 right-2 px-2 text-xs text-white rounded-full bg-red-600">
+                {cartItems.reduce((a, c) => a + c.qty, 0)}
+              </span>
+            )}
+          </Link>
+          <Link to="/favorite" className="flex items-center hover:text-orange-300">
+            <FaHeart className="mr-2" /> Favorites
+            <FavoritesCount />
+          </Link>
+          {userInfo ? (
+            <>
+              <Link to="/profile" className="block hover:text-orange-300">
+                Profile
+              </Link>
+              {userInfo.isAdmin && <AdminMenu />}
+              <button
+                onClick={logoutHandler}
+                className="block text-left hover:text-orange-300 w-full"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="block hover:text-orange-300">
+                Login
+              </Link>
+              <Link to="/register" className="block hover:text-pink-500">
+                Register
+              </Link>
+            </>
           )}
+        </div>
+      )}
     </nav>
   );
 };

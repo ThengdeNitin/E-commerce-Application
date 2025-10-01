@@ -19,41 +19,16 @@ const AdminDashboard = () => {
 
   const [state, setState] = useState({
     options: {
-      chart: {
-        type: "line",
-      },
-      tooltip: {
-        theme: "dark",
-      },
+      chart: { type: "line" },
+      tooltip: { theme: "dark" },
       colors: ["#00E396"],
-      dataLabels: {
-        enabled: true,
-      },
-      stroke: {
-        curve: "smooth",
-      },
-      title: {
-        text: "Sales Trend",
-        align: "left",
-      },
-      grid: {
-        borderColor: "#ccc",
-      },
-      markers: {
-        size: 1,
-      },
-      xaxis: {
-        categories: [],
-        title: {
-          text: "Date",
-        },
-      },
-      yaxis: {
-        title: {
-          text: "Sales",
-        },
-        min: 0,
-      },
+      dataLabels: { enabled: true },
+      stroke: { curve: "smooth" },
+      title: { text: "Sales Trend", align: "left" },
+      grid: { borderColor: "#ccc" },
+      markers: { size: 1 },
+      xaxis: { categories: [], title: { text: "Date" } },
+      yaxis: { title: { text: "Sales" }, min: 0 },
       legend: {
         position: "top",
         horizontalAlign: "right",
@@ -76,14 +51,9 @@ const AdminDashboard = () => {
         ...prevState,
         options: {
           ...prevState.options,
-          xaxis: {
-            categories: formattedSalesDate.map((item) => item.x),
-          },
+          xaxis: { categories: formattedSalesDate.map((item) => item.x) },
         },
-
-        series: [
-          { name: "Sales", data: formattedSalesDate.map((item) => item.y) },
-        ],
+        series: [{ name: "Sales", data: formattedSalesDate.map((item) => item.y) }],
       }));
     }
   }, [salesDetail]);
@@ -92,50 +62,50 @@ const AdminDashboard = () => {
     <>
       <AdminMenu />
 
-      <section className="xl:ml-[4rem] md:ml-[0rem]">
-        <div className="w-[80%] flex justify-around flex-wrap">
-          <div className="rounded-lg bg-black p-5 w-[20rem] mt-5">
-            <div className="font-bold rounded-full w-[3rem] bg-pink-500 text-center p-3">
+      <section className="xl:ml-[4rem] md:ml-0 p-4">
+        <div className="flex flex-wrap justify-center gap-4">
+          <div className="rounded-lg bg-black p-5 w-full sm:w-[45%] md:w-[20rem]">
+            <div className="font-bold rounded-full w-12 h-12 bg-pink-500 text-center p-3">
               ₹
             </div>
-
-            <p className="mt-5">Sales</p>
-            <h1 className="text-xl font-bold">
-             ₹ {isLoading ? <Loader /> : sales.totalSales.toFixed(2)}
+            <p className="mt-5 text-white">Sales</p>
+            <h1 className="text-xl font-bold text-white">
+              {isLoading ? <Loader /> : `₹ ${sales?.totalSales.toFixed(2)}`}
             </h1>
           </div>
-          <div className="rounded-lg bg-black p-5 w-[20rem] mt-5">
-            <div className="font-bold rounded-full w-[3rem] bg-pink-500 text-center p-3">
-              ₹
-            </div>
 
-            <p className="mt-5">Customers</p>
-            <h1 className="text-xl font-bold">
-             ₹ {isLoading ? <Loader /> : customers?.length}
+          <div className="rounded-lg bg-black p-5 w-full sm:w-[45%] md:w-[20rem]">
+            <div className="font-bold rounded-full w-12 h-12 bg-pink-500 text-center p-3">
+              👤
+            </div>
+            <p className="mt-5 text-white">Customers</p>
+            <h1 className="text-xl font-bold text-white">
+              {loading ? <Loader /> : customers?.length}
             </h1>
           </div>
-          <div className="rounded-lg bg-black p-5 w-[20rem] mt-5">
-            <div className="font-bold rounded-full w-[3rem] bg-pink-500 text-center p-3">
-             ₹
-            </div>
 
-            <p className="mt-5">All Orders</p>
-            <h1 className="text-xl font-bold">
-             ₹ {isLoading ? <Loader /> : orders?.totalOrders}
+          <div className="rounded-lg bg-black p-5 w-full sm:w-[45%] md:w-[20rem]">
+            <div className="font-bold rounded-full w-12 h-12 bg-pink-500 text-center p-3">
+              📦
+            </div>
+            <p className="mt-5 text-white">All Orders</p>
+            <h1 className="text-xl font-bold text-white">
+              {loadingTwo ? <Loader /> : orders?.totalOrders}
             </h1>
           </div>
         </div>
 
-        <div className="ml-[10rem] mt-[4rem]">
+        <div className="mt-10 w-full flex justify-center">
           <Chart
             options={state.options}
             series={state.series}
             type="bar"
-            width="70%"
+            width="100%"
+            height={350}
           />
         </div>
 
-        <div className="mt-[4rem]">
+        <div className="mt-10">
           <OrderList />
         </div>
       </section>
