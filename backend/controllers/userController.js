@@ -40,26 +40,27 @@ const createUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const existingUser = await User.findOne({ email });
-  if (!existingUser) {
+  const user = await User.findOne({ email });
+  if (!user) {
     res.status(401);
     throw new Error("Invalid email or password");
   }
 
-  const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+  const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
     res.status(401);
     throw new Error("Invalid email or password");
   }
 
-  const token = createToken(res, existingUser._id);
+  // Generate JWT token (cookie + return)
+  const token = createToken(res, user._id);
 
   res.status(200).json({
-    _id: existingUser._id,
-    username: existingUser.username,
-    email: existingUser.email,
-    isAdmin: existingUser.isAdmin,
-    token, 
+    _id: user._id,
+    username: user.username,
+    email: user.email,
+    isAdmin: user.isAdmin,
+    token, // optional, for localStorage
   });
 });
 
