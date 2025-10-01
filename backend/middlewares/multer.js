@@ -16,7 +16,6 @@ cloudinary.config({
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// Upload buffer to Cloudinary
 const uploadToCloudinary = (fileBuffer, folder = "E-commerce_app") => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(

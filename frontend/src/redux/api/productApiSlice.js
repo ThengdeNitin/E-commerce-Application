@@ -12,7 +12,6 @@ export const productApiSlice = apiSlice.injectEndpoints({
       providesTags: ["Products"],
     }),
 
-    // Fetch single product by ID
     getProductById: builder.query({
       query: (productId) => `${PRODUCT_URL}/${productId}`,
       providesTags: (result, error, productId) => [
@@ -20,12 +19,10 @@ export const productApiSlice = apiSlice.injectEndpoints({
       ],
     }),
 
-    // Fetch all products
     allProducts: builder.query({
       query: () => `${PRODUCT_URL}/allproducts`,
     }),
 
-    // Fetch product details (duplicate of getProductById, optional)
     getProductDetails: builder.query({
       query: (productId) => `${PRODUCT_URL}/${productId}`,
       keepUnusedDataFor: 5,
