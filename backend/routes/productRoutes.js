@@ -26,10 +26,10 @@ router.get("/new", fetchNewProducts);
 router.get("/:id", fetchProductById); 
 router.post("/filtered-products", filterProducts); 
 
-router.post("/uploads", upload.single("image"), uploadProductImage);
-router.post("/", authorizeAdmin, addProduct);
-router.put("/:id", authorizeAdmin, updateProductDetails);
-router.delete("/:id", authorizeAdmin, removeProduct);
+router.post("/uploads", authenticate, authorizeAdmin, upload.single("image"), uploadProductImage);
+router.post("/", authenticate, authorizeAdmin, addProduct);
+router.put("/:id", authenticate, authorizeAdmin, updateProductDetails);
+router.delete("/:id", authenticate, authorizeAdmin, removeProduct);
 
 router.post("/:id/reviews", authenticate, checkId, addProductReview);
 
