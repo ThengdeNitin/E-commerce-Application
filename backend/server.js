@@ -16,32 +16,23 @@ import orderRoutes from "./routes/orderRoutes.js";
 const app = express();
 
 // Connect to MongoDB
-connectDB();
+connectDB().catch((err) => {
+  console.error("MongoDB connection error:", err);
+  process.exit(1); // Exit if DB connection fails
+});
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// CORS Setup
-const allowedOrigins = [
-  process.env.FRONTEND_URL || "" // Vite default port or your frontend
-];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or server-to-server)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error(`CORS policy: Origin ${origin} not allowed`));
-      }
-    },
-    credentials: true,
-  })
-);
+// CORS Configuration
+const allowedOrigin = process.env.FRONTEND_URL || "*"; // Don't use '*' if credentials true
+app.use(cors({
+  origin: allowedOrigin,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true
+}));
 
 // API Routes
 app.use("/api/users", userRoutes);
