@@ -6,9 +6,8 @@ export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
-    credentials: "include", // <-- send cookies automatically
+    credentials: "include",
     prepareHeaders: (headers, { getState }) => {
-      // optionally add any auth header if you use token in localStorage
       return headers;
     },
   }),
