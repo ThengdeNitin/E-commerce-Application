@@ -52,15 +52,14 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new Error("Invalid email or password");
   }
 
-  // Generate and set token in cookie
-  const token = generateToken(res, existingUser._id);
+  const token = createToken(res, existingUser._id);
 
   res.status(200).json({
     _id: existingUser._id,
     username: existingUser.username,
     email: existingUser.email,
     isAdmin: existingUser.isAdmin,
-    token, // optional, since it’s already in cookie
+    token, 
   });
 });
 
