@@ -1,10 +1,7 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-
+import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 
 import userRoutes from "./routes/userRoutes.js";
@@ -13,12 +10,14 @@ import productRoutes from "./routes/productRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 
+dotenv.config();
+
 const app = express();
 
 // Connect to MongoDB
 connectDB().catch((err) => {
   console.error("MongoDB connection error:", err);
-  process.exit(1); // Exit if DB connection fails
+  process.exit(1);
 });
 
 // Middleware
@@ -26,13 +25,28 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// CORS Configuration
-const allowedOrigin = process.env.FRONTEND_URL || "*"; // Don't use '*' if credentials true
-app.use(cors({
-  origin: allowedOrigin,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true
-}));
+// Dynamic CORS setup
+const allowedOrigins = [
+  process.env.FRONTEND_URL_LOCAL,
+  process.env.FRONTEND_URL_PROD,
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like Postman)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+);
 
 // API Routes
 app.use("/api/users", userRoutes);
@@ -41,7 +55,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/uploads", uploadRoutes);
 app.use("/api/orders", orderRoutes);
 
-// PayPal Config Route
+// PayPal config
 app.get("/api/config/paypal", (req, res) => {
   res.send({ clientId: process.env.PAYPAL_CLIENT_ID || "sb" });
 });
@@ -62,7 +76,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: err.message || "Server Error" });
 });
 
-// Start Server
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
