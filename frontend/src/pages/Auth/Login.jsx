@@ -31,13 +31,23 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await login({ email, password }).unwrap();
-      // console.log(res);
+  
+      localStorage.setItem("authToken", res.token);
+      localStorage.setItem("user", JSON.stringify({
+        _id: res._id,
+        username: res.username,
+        email: res.email,
+        isAdmin: res.isAdmin,
+      }));
+  
       dispatch(setCredentials({ ...res }));
+  
       navigate(redirect);
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
   };
+  
 
   return (
     <div>

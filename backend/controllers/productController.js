@@ -9,7 +9,7 @@ const uploadProductImage = asyncHandler(async (req, res) => {
   }
 
   try {
-    const result = await uploadToCloudinary(req.file.buffer, "products");
+    const result = await uploadToCloudinary(req.file.buffer, "E-commerce_app");
     res.status(201).json({
       message: "File uploaded successfully",
       image: result.secure_url, 

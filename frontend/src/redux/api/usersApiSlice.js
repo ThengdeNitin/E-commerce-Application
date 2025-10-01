@@ -1,57 +1,54 @@
 import { apiSlice } from "./apiSlice";
-import { BASE_URL,USERS_URL } from "../constants";
+import { USERS_URL } from "../constants";
 
 export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (data) => ({
-        url: `${BASE_URL}${USERS_URL}/auth`,
+        url: `${USERS_URL}/auth`,
         method: "POST",
         body: data,
       }),
     }),
     register: builder.mutation({
       query: (data) => ({
-        url: `${BASE_URL}${USERS_URL}`,
+        url: USERS_URL,
         method: "POST",
         body: data,
       }),
     }),
     logout: builder.mutation({
       query: () => ({
-        url: `${BASE_URL}${USERS_URL}/logout`,
+        url: `${USERS_URL}/logout`,
         method: "POST",
       }),
     }),
     profile: builder.mutation({
       query: (data) => ({
-        url: `${BASE_URL}${USERS_URL}/profile`,
+        url: `${USERS_URL}/profile`,
         method: "PUT",
         body: data,
       }),
+      invalidatesTags: ["User"],
     }),
     getUsers: builder.query({
-      query: () => ({
-        url: USERS_URL,
-      }),
+      query: () => USERS_URL,
       providesTags: ["User"],
-      keepUnusedDataFor: 5,
     }),
     deleteUser: builder.mutation({
       query: (userId) => ({
-        url: `${BASE_URL}${USERS_URL}/${userId}`,
+        url: `${USERS_URL}/${userId}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["User"],
     }),
     getUserDetails: builder.query({
-      query: (id) => ({
-        url: `${BASE_URL}${USERS_URL}/${id}`,
-      }),
-      keepUnusedDataFor: 5,
+      query: (id) => `${USERS_URL}/${id}`,
+      providesTags: ["User"],
     }),
     updateUser: builder.mutation({
       query: (data) => ({
-        url: `${BASE_URL}${USERS_URL}/${data.userId}`,
+        url: `${USERS_URL}/${data.userId}`,
         method: "PUT",
         body: data,
       }),
