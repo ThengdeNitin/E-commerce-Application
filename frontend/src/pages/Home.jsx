@@ -41,10 +41,10 @@ const Home = () => {
 
   return (
     <>
-      {!keyword && <Header />}
+      {!keyword ? <Header /> : null}
 
       <section
-        className="relative h-80 sm:h-96 overflow-hidden"
+        className="relative h-96 overflow-hidden"
         style={{
           backgroundImage: `url(${heroSlides[currentSlide].image})`,
           backgroundSize: "cover",
@@ -52,23 +52,23 @@ const Home = () => {
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+        <div className="absolute inset-0 bg-opacity-40"></div>
 
         <div className="relative container mx-auto px-4 h-full flex items-center">
-          <div className="text-white z-10 max-w-lg">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-4">
+          <div className="text-white z-10">
+            <h1 className="text-5xl font-bold mb-4">
               {heroSlides[currentSlide].title}
             </h1>
-            <p className="text-md sm:text-lg md:text-xl mb-4 sm:mb-6 opacity-90">
+            <p className="text-xl mb-6 opacity-90">
               {heroSlides[currentSlide].subtitle}
             </p>
 
             <Link
               to="/shop"
-              className="bg-white text-purple-600 px-6 py-2 sm:px-8 sm:py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-300 inline-flex items-center space-x-2"
+              className="bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-300 items-center space-x-2 inline-flex"
             >
               <span>{heroSlides[currentSlide].cta}</span>
-              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
+              <ArrowRight className="h-5 w-5" />
             </Link>
           </div>
         </div>
@@ -90,29 +90,29 @@ const Home = () => {
         <Loader />
       ) : isError ? (
         <Message variant="danger">
-          {isError?.data?.message || isError?.error}
+          {isError?.data.message || isError.error}
         </Message>
       ) : (
         <>
-          <div className="flex flex-col sm:flex-row justify-between items-center mt-6 px-4 sm:px-8">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-0">
-              Our Products
-            </h1>
+          <div className="flex justify-between items-center">
+            <h1 className="ml-[20rem] mt-[1rem] text-[3rem]">Our Products</h1>
 
             <Link
               to="/shop"
-              className="bg-pink-600 text-white font-bold rounded-full py-2 px-6 sm:py-2 sm:px-10"
+              className="bg-pink-600 font-bold rounded-full py-2 px-10 mr-[18rem] mt-[10rem]"
             >
               Shop
             </Link>
           </div>
 
-          <div className="flex justify-center flex-wrap mt-4 sm:mt-8 px-4 sm:px-0 gap-4">
-            {data.products.map((product) => (
-              <div key={product._id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
-                <Product product={product} />
-              </div>
-            ))}
+          <div>
+            <div className="flex justify-center flex-wrap mt-[2rem]">
+              {data.products.map((product) => (
+                <div key={product._id}>
+                  <Product product={product} />
+                </div>
+              ))}
+            </div>
           </div>
         </>
       )}

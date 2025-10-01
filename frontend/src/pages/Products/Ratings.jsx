@@ -5,26 +5,19 @@ const Ratings = ({ value = 0, text = "", color = "yellow-500" }) => {
   const halfStar = value - fullStars >= 0.5 ? 1 : 0;
   const emptyStars = 5 - fullStars - halfStar;
 
-  const starColorClass = color === "yellow-500" ? "text-yellow-500" : "text-" + color;
-
   return (
-    <div className="flex items-center flex-wrap sm:flex-nowrap">
+    <div className="flex items-center">
       {[...Array(fullStars)].map((_, index) => (
-        <FaStar key={index} className={`${starColorClass} mr-1 text-base sm:text-lg`} />
+        <FaStar key={index} className={`text-${color} ml-1`} />
       ))}
 
-      {halfStar === 1 && (
-        <FaStarHalfAlt className={`${starColorClass} mr-1 text-base sm:text-lg`} />
-      )}
-
+      {halfStar === 1 && <FaStarHalfAlt className={`text-${color} ml-1`} />}
       {[...Array(emptyStars)].map((_, index) => (
-        <FaRegStar key={index} className={`${starColorClass} mr-1 text-base sm:text-lg`} />
+        <FaRegStar key={index} className={`text-${color} ml-1`} />
       ))}
 
       {text && (
-        <span className={`ml-2 text-sm sm:text-base ${starColorClass}`}>
-          {text}
-        </span>
+        <span className={`ml-2 text-${color} text-sm`}>{text}</span>
       )}
     </div>
   );
