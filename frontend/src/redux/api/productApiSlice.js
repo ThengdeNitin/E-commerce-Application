@@ -5,7 +5,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProducts: builder.query({
       query: ({ keyword }) => ({
-        url: `${PRODUCT_URL}`,
+        url: `${BASE_URL}`,
         params: { keyword },
       }),
       keepUnusedDataFor: 5,
@@ -13,24 +13,24 @@ export const productApiSlice = apiSlice.injectEndpoints({
     }),
 
     getProductById: builder.query({
-      query: (productId) => `${PRODUCT_URL}/${productId}`,
+      query: (productId) => `${BASE_URL}/${productId}`,
       providesTags: (result, error, productId) => [
         { type: "Product", id: productId },
       ],
     }),
 
     allProducts: builder.query({
-      query: () => `${PRODUCT_URL}/allproducts`,
+      query: () => `${BASE_URL}/allproducts`,
     }),
 
     getProductDetails: builder.query({
-      query: (productId) => `${PRODUCT_URL}/${productId}`,
+      query: (productId) => `${BASE_URL}/${productId}`,
       keepUnusedDataFor: 5,
     }),
 
     uploadProductImage: builder.mutation({
       query: (formData) => ({
-        url: `${PRODUCT_URL}/uploads`,
+        url: `${BASE_URL}/uploads`,
         method: "POST",
         body: formData,
       }),
@@ -38,7 +38,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
 
     createProduct: builder.mutation({
       query: (product) => ({
-        url: `${PRODUCT_URL}`,
+        url: `${BASE_URL}`,
         method: "POST",
         body: product, // JSON object
       }),
@@ -56,7 +56,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
     // Delete product
     deleteProduct: builder.mutation({
       query: (productId) => ({
-        url: `${PRODUCT_URL}/${productId}`,
+        url: `${BASE_URL}/${productId}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Products"],
@@ -76,20 +76,20 @@ export const productApiSlice = apiSlice.injectEndpoints({
 
     // Get top products
     getTopProducts: builder.query({
-      query: () => `${PRODUCT_URL}/top`,
+      query: () => `${BASE_URL}/top`,
       keepUnusedDataFor: 5,
     }),
 
     // Get newest products
     getNewProducts: builder.query({
-      query: () => `${PRODUCT_URL}/new`,
+      query: () => `${BASE_URL}/new`,
       keepUnusedDataFor: 5,
     }),
 
     // Filter products
     getFilteredProducts: builder.query({
       query: ({ checked, radio }) => ({
-        url: `${PRODUCT_URL}/filtered-products`,
+        url: `${BASE_URL}/filtered-products`,
         method: "POST",
         body: { checked, radio },
       }),
