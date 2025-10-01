@@ -3,21 +3,16 @@ import Product from "../models/productModel.js";
 import mongoose from "mongoose";
 import { uploadToCloudinary } from "../middlewares/multer.js";
 
-// ------------------------
-// Upload product image (Cloudinary)
-// ------------------------
 const uploadProductImage = asyncHandler(async (req, res) => {
   if (!req.file || !req.file.buffer) {
     return res.status(400).json({ message: "Please upload an image." });
   }
 
   try {
-    // Upload to Cloudinary
     const result = await uploadToCloudinary(req.file.buffer, "products");
-
     res.status(201).json({
       message: "File uploaded successfully",
-      image: result.secure_url, // Cloudinary URL
+      image: result.secure_url, 
     });
   } catch (err) {
     console.error("Cloudinary upload error:", err);
@@ -25,10 +20,6 @@ const uploadProductImage = asyncHandler(async (req, res) => {
   }
 });
 
-
-// ------------------------
-// Add new product
-// ------------------------
 const addProduct = asyncHandler(async (req, res) => {
   const { name, description, price, category, quantity, brand, image, countInStock } = req.body;
 
@@ -43,7 +34,7 @@ const addProduct = asyncHandler(async (req, res) => {
     category: new mongoose.Types.ObjectId(category),
     quantity: Number(quantity),
     brand: brand.trim(),
-    image: image, // Cloudinary URL
+    image: image, 
     countInStock: Number(countInStock) || 0,
   });
 
@@ -51,9 +42,6 @@ const addProduct = asyncHandler(async (req, res) => {
   res.status(201).json(createdProduct);
 });
 
-// ------------------------
-// Update product details
-// ------------------------
 const updateProductDetails = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -61,10 +49,10 @@ const updateProductDetails = asyncHandler(async (req, res) => {
     return res.status(400).json({ error: "Invalid product ID" });
   }
 
-  const { name, description, price, category, quantity, brand, image, countInStock } = req.body;
-
   const product = await Product.findById(id);
   if (!product) return res.status(404).json({ error: "Product not found" });
+
+  const { name, description, price, category, quantity, brand, image, countInStock } = req.body;
 
   product.name = name ? name.trim() : product.name;
   product.description = description ? description.trim() : product.description;
@@ -72,7 +60,7 @@ const updateProductDetails = asyncHandler(async (req, res) => {
   product.category = category ? new mongoose.Types.ObjectId(category) : product.category;
   product.quantity = quantity !== undefined && quantity !== null ? Number(quantity) : product.quantity;
   product.brand = brand ? brand.trim() : product.brand;
-  product.image = image ? image : product.image; // Cloudinary URL
+  product.image = image ? image : product.image; 
   product.countInStock = countInStock !== undefined && countInStock !== null ? Number(countInStock) : product.countInStock;
 
   const updatedProduct = await product.save();
@@ -82,18 +70,12 @@ const updateProductDetails = asyncHandler(async (req, res) => {
   });
 });
 
-// ------------------------
-// Delete product
-// ------------------------
 const removeProduct = asyncHandler(async (req, res) => {
   const product = await Product.findByIdAndDelete(req.params.id);
   if (!product) return res.status(404).json({ error: "Product not found" });
   res.json({ message: "Product deleted", product });
 });
 
-// ------------------------
-// Fetch paginated products
-// ------------------------
 const fetchProducts = asyncHandler(async (req, res) => {
   const pageSize = 6;
   const page = Number(req.query.page) || 1;
@@ -113,7 +95,6 @@ const fetchProducts = asyncHandler(async (req, res) => {
   });
 });
 
-
 const fetchProductById = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id).populate("category");
   if (!product) return res.status(404).json({ error: "Product not found" });
@@ -124,7 +105,6 @@ const fetchAllProducts = asyncHandler(async (req, res) => {
   const products = await Product.find({}).populate("category").sort({ createdAt: -1 });
   res.json(products);
 });
-
 
 const addProductReview = asyncHandler(async (req, res) => {
   const { rating, comment } = req.body;
@@ -149,18 +129,15 @@ const addProductReview = asyncHandler(async (req, res) => {
   res.status(201).json({ message: "Review added" });
 });
 
-
 const fetchTopProducts = asyncHandler(async (req, res) => {
   const products = await Product.find({}).sort({ rating: -1 }).limit(4);
   res.json(products);
 });
 
-
 const fetchNewProducts = asyncHandler(async (req, res) => {
   const products = await Product.find().sort({ createdAt: -1 }).limit(5);
   res.json(products);
 });
-
 
 const filterProducts = asyncHandler(async (req, res) => {
   const { checked = [], radio = [] } = req.body;
