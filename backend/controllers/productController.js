@@ -1,20 +1,30 @@
 import asyncHandler from "../middlewares/asyncHandler.js";
 import Product from "../models/productModel.js";
 import mongoose from "mongoose";
+import { uploadToCloudinary } from "../middlewares/multer.js";
 
 // ------------------------
 // Upload product image (Cloudinary)
 // ------------------------
 const uploadProductImage = asyncHandler(async (req, res) => {
-  if (!req.file || !req.file.path) {
+  if (!req.file || !req.file.buffer) {
     return res.status(400).json({ message: "Please upload an image." });
   }
 
-  res.status(201).json({
-    message: "File uploaded successfully",
-    image: req.file.path, // Cloudinary URL
-  });
+  try {
+    // Upload to Cloudinary
+    const result = await uploadToCloudinary(req.file.buffer, "products");
+
+    res.status(201).json({
+      message: "File uploaded successfully",
+      image: result.secure_url, // Cloudinary URL
+    });
+  } catch (err) {
+    console.error("Cloudinary upload error:", err);
+    res.status(500).json({ message: "Image upload failed" });
+  }
 });
+
 
 // ------------------------
 // Add new product
