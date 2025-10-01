@@ -1,5 +1,5 @@
 import express from "express";
-import {
+import { 
   uploadProductImage,
   addProduct,
   updateProductDetails,
@@ -19,18 +19,22 @@ import { upload } from "../middlewares/multer.js";
 
 const router = express.Router();
 
-router.get("/", fetchProducts); 
-router.get("/allproducts", fetchAllProducts); 
-router.get("/top", fetchTopProducts); 
-router.get("/new", fetchNewProducts); 
-router.get("/:id", fetchProductById); 
-router.post("/filtered-products", filterProducts); 
+router.post("/uploads", upload.single("image"), uploadProductImage);
 
-router.post("/uploads", authenticate, authorizeAdmin, upload.single("image"), uploadProductImage);
+router.get("/", fetchProducts);
+router.get("/allproducts", fetchAllProducts);
+router.get("/top", fetchTopProducts);
+router.get("/new", fetchNewProducts);
+
 router.post("/", authenticate, authorizeAdmin, addProduct);
-router.put("/:id", authenticate, authorizeAdmin, updateProductDetails);
-router.delete("/:id", authenticate, authorizeAdmin, removeProduct);
+
+router
+  .route("/:id")
+  .get(fetchProductById)
+  .put(authenticate, authorizeAdmin, updateProductDetails)
+  .delete(authenticate, authorizeAdmin, removeProduct);
 
 router.post("/:id/reviews", authenticate, checkId, addProductReview);
+router.post("/filtered-products", filterProducts);
 
 export default router;
