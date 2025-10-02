@@ -1,7 +1,7 @@
 const Message = ({ variant, children }) => {
   const getVariantClass = () => {
     switch (variant) {
-      case "succcess":
+      case "success":
         return "bg-green-100 text-green-800";
       case "error":
         return "bg-red-100 text-red-800";
@@ -10,7 +10,11 @@ const Message = ({ variant, children }) => {
     }
   };
 
-  return <div className={`p-4 rounded ${getVariantClass()}`}>{children}</div>;
+  return (
+    <div className={`p-3 sm:p-4 rounded max-w-full sm:max-w-md mx-auto ${getVariantClass()}`}>
+      {children}
+    </div>
+  );
 };
 
 export default Message;

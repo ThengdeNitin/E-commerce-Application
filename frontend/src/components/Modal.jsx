@@ -2,16 +2,20 @@ const Modal = ({ isOpen, onClose, children }) => {
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="fixed inset-0 bg-black opacity-50"></div>
-          <div className="absolute top-[40%] right-[50%] bg-white p-4 rounded-lg z-10 text-right">
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+          <div
+            className="fixed inset-0 bg-black opacity-50"
+            onClick={onClose} 
+          ></div>
+
+          <div className="relative bg-white rounded-lg z-10 w-full max-w-md sm:max-w-lg p-4 sm:p-6">
             <button
-              className="text-black font-semibold hover:text-gray-700 focus:outline-none mr-2"
+              className="absolute top-2 right-2 text-black font-semibold hover:text-gray-700 focus:outline-none"
               onClick={onClose}
             >
               X
             </button>
-            {children}
+            <div className="mt-4">{children}</div>
           </div>
         </div>
       )}
