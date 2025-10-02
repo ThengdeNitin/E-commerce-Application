@@ -52,7 +52,7 @@ const Home = () => {
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+        <div className="absolute inset-0 bg-opacity-40"></div>
 
         <div className="relative container mx-auto px-4 h-full flex items-center">
           <div className="text-white z-10 max-w-lg">
@@ -94,7 +94,7 @@ const Home = () => {
         </Message>
       ) : (
         <>
-          <div className="flex flex-col sm:flex-row justify-between items-center mt-6 px-4 sm:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center mt-10 mb-2 px-4 sm:px-8">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-0">
               Our Products
             </h1>

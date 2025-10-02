@@ -76,7 +76,7 @@ const ProductCard = ({ p }) => {
             className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition"
             onClick={() => addToCartHandler(p, 1)}
           >
-            <AiOutlineShoppingCart size={22} className="sm:size-25" />
+            <AiOutlineShoppingCart size={22} className="sm:size-7" />
           </button>
         </section>
       </div>
