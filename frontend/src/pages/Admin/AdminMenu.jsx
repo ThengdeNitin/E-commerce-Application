@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { FaTimes } from "react-icons/fa";
 
 const AdminMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,25 +10,19 @@ const AdminMenu = () => {
 
   return (
     <>
+      {/* Fixed hamburger button (always same icon) */}
       <button
-        className={`${
-          isMenuOpen ? "top-1 right-3" : "top-1 right-12"
-        } bg-[#151515] p-2 fixed rounded-lg`}
+        className="top-1 right-17 bg-[#151515] p-2 fixed rounded-lg"
         onClick={toggleMenu}
       >
-        {isMenuOpen ? (
-          <FaTimes color="white" />
-        ) : (
-          <>
-            <div className="w-6 h-0.5 bg-gray-200 my-1"></div>
-            <div className="w-6 h-0.5 bg-gray-200 my-1"></div>
-            <div className="w-6 h-0.5 bg-gray-200 my-1"></div>
-          </>
-        )}
+        <div className="w-6 h-0.5 bg-gray-200 my-1"></div>
+        <div className="w-6 h-0.5 bg-gray-200 my-1"></div>
+        <div className="w-6 h-0.5 bg-gray-200 my-1"></div>
       </button>
 
+      {/* Dropdown menu */}
       {isMenuOpen && (
-        <section className="bg-[#151515] p-4 fixed right-9 top-10">
+        <section className="bg-[#151515] p-4 fixed right-25 top-11">
           <ul className="list-none mt-2">
             <li>
               <NavLink

@@ -79,11 +79,9 @@ const ProductList = () => {
 
   return (
     <div className="flex flex-col md:flex-row w-full">
-      <div className="md:w-1/4 w-full">
         <AdminMenu />
-      </div>
 
-      <div className="md:w-3/4 w-full p-4">
+      <div className="md:w-full w-full p-4 m-10">
         <h2 className="font-bold text-2xl mb-5">Create Product</h2>
 
         {imageUrl && (
