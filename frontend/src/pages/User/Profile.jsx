@@ -52,7 +52,7 @@ const Profile = () => {
       <div className="flex flex-col md:flex-row md:justify-center md:space-x-6">
         <div className="w-full md:w-1/2 lg:w-1/3 bg-[#1A1A1A] p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold mb-6 text-white text-center md:text-left">
-            Update Profile
+            Profile
           </h2>
           <form onSubmit={submitHandler} className="space-y-4">
             <div>
@@ -60,7 +60,7 @@ const Profile = () => {
               <input
                 type="text"
                 placeholder="Enter name"
-                className="w-full p-3 rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full p-3 rounded bg-gray-800 !text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
                 value={username}
                 onChange={(e) => setUserName(e.target.value)}
               />
@@ -71,18 +71,18 @@ const Profile = () => {
               <input
                 type="email"
                 placeholder="Enter email"
-                className="w-full p-3 rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full p-3 rounded bg-gray-800 !text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
-            <div>
+            {/* <div>
               <label className="block text-white mb-1">Password</label>
               <input
                 type="password"
                 placeholder="Enter password"
-                className="w-full p-3 rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full p-3 rounded bg-gray-800 !text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -93,12 +93,12 @@ const Profile = () => {
               <input
                 type="password"
                 placeholder="Confirm password"
-                className="w-full p-3 rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full p-3 rounded bg-gray-800 !text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
-            </div>
-
+            </div> */}
+{/* 
             <div className="flex flex-col sm:flex-row justify-between gap-4 mt-4">
               <button
                 type="submit"
@@ -114,7 +114,7 @@ const Profile = () => {
                 My Orders
               </Link>
             </div>
-            {loadingUpdateProfile && <Loader />}
+            {loadingUpdateProfile && <Loader />} */}
           </form>
         </div>
       </div>

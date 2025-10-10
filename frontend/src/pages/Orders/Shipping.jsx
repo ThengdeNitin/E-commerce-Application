@@ -47,7 +47,7 @@ const Shipping = () => {
             <label className="block text-white mb-2">Address</label>
             <input
               type="text"
-              className="w-full p-2 border rounded text-black"
+              className="w-full p-2 border rounded !text-white"
               placeholder="Enter address"
               value={address}
               required
@@ -59,7 +59,7 @@ const Shipping = () => {
             <label className="block text-white mb-2">City</label>
             <input
               type="text"
-              className="w-full p-2 border rounded text-black"
+              className="w-full p-2 border rounded !text-white"
               placeholder="Enter city"
               value={city}
               required
@@ -71,7 +71,7 @@ const Shipping = () => {
             <label className="block text-white mb-2">Postal Code</label>
             <input
               type="text"
-              className="w-full p-2 border rounded text-black"
+              className="w-full p-2 border rounded !text-white"
               placeholder="Enter postal code"
               value={postalCode}
               required
@@ -83,7 +83,7 @@ const Shipping = () => {
             <label className="block text-white mb-2">Country</label>
             <input
               type="text"
-              className="w-full p-2 border rounded text-black"
+              className="w-full p-2 border rounded !text-white"
               placeholder="Enter country"
               value={country}
               required

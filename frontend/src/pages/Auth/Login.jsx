@@ -50,7 +50,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row items-center justify-center bg-gray-900 px-4 py-8">
+    <div className="min-h-screen flex flex-col md:flex-row items-center justify-center bg-gray-900 px-4 py-8 gap-14">
       <div className="w-full md:w-1/2 max-w-md bg-gray-800 p-6 rounded-lg shadow-lg mb-8 md:mb-0">
         <h1 className="text-2xl font-semibold mb-6 text-white">Sign In</h1>
         <form onSubmit={submitHandler}>
@@ -61,7 +61,7 @@ const Login = () => {
               placeholder="Enter email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 rounded border text-black"
+              className="w-full p-2 rounded border !text-white"
               required
             />
           </div>
@@ -73,7 +73,7 @@ const Login = () => {
               placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 rounded border text-black"
+              className="w-full p-2 rounded border !text-white"
               required
             />
           </div>
