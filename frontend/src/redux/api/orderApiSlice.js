@@ -1,5 +1,5 @@
 import { apiSlice } from "./apiSlice";
-import { BASE_URL,ORDERS_URL, PAYPAL_URL } from "../constants";
+import { ORDERS_URL, PAYPAL_URL } from "../constants";
 
 export const orderApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,58 +9,53 @@ export const orderApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: order,
       }),
+      invalidatesTags: ["Order"],
     }),
 
     getOrderDetails: builder.query({
-      query: (id) => ({
-        url: `${BASE_URL}${ORDERS_URL}/${id}`,
-      }),
+      query: (id) => `${ORDERS_URL}/${id}`,
     }),
 
     payOrder: builder.mutation({
       query: ({ orderId, details }) => ({
-        url: `${BASE_URL}${ORDERS_URL}/${orderId}/pay`,
+        url: `${ORDERS_URL}/${orderId}/pay`,
         method: "PUT",
         body: details,
       }),
+      invalidatesTags: ["Order"],
     }),
 
     getPaypalClientId: builder.query({
-      query: () => ({
-        url: PAYPAL_URL,
-      }),
+      query: () => PAYPAL_URL,
     }),
 
     getMyOrders: builder.query({
-      query: () => ({
-        url: `${BASE_URL}${ORDERS_URL}/mine`,
-      }),
+      query: () => `${ORDERS_URL}/mine`,
       keepUnusedDataFor: 5,
     }),
 
     getOrders: builder.query({
-      query: () => ({
-        url: ORDERS_URL,
-      }),
+      query: () => ORDERS_URL,
     }),
 
     deliverOrder: builder.mutation({
       query: (orderId) => ({
-        url: `${BASE_URL}${ORDERS_URL}/${orderId}/deliver`,
+        url: `${ORDERS_URL}/${orderId}/deliver`,
         method: "PUT",
       }),
+      invalidatesTags: ["Order"],
     }),
 
     getTotalOrders: builder.query({
-      query: () => `${BASE_URL}${ORDERS_URL}/total-orders`,
+      query: () => `${ORDERS_URL}/total-orders`,
     }),
 
     getTotalSales: builder.query({
-      query: () => `${BASE_URL}${ORDERS_URL}/total-sales`,
+      query: () => `${ORDERS_URL}/total-sales`,
     }),
 
     getTotalSalesByDate: builder.query({
-      query: () => `${BASE_URL}${ORDERS_URL}/total-sales-by-date`,
+      query: () => `${ORDERS_URL}/total-sales-by-date`,
     }),
   }),
 });

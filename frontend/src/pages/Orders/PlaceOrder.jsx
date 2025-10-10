@@ -10,9 +10,10 @@ import { clearCartItems } from "../../redux/features/cart/cartSlice";
 
 const PlaceOrder = () => {
   const navigate = useNavigate();
-  const cart = useSelector((state) => state.cart);
-  const [createOrder, { isLoading, error }] = useCreateOrderMutation();
   const dispatch = useDispatch();
+  const cart = useSelector((state) => state.cart);
+
+  const [createOrder, { isLoading, error }] = useCreateOrderMutation();
 
   useEffect(() => {
     if (!cart.shippingAddress.address) {
@@ -22,19 +23,25 @@ const PlaceOrder = () => {
 
   const placeOrderHandler = async () => {
     try {
+      const orderItemsForBackend = cart.cartItems.map((item) => ({
+        _id: item._id, 
+        qty: item.qty || item.quantity,
+      }));
+
       const res = await createOrder({
-        orderItems: cart.cartItems,
+        orderItems: orderItemsForBackend,
         shippingAddress: cart.shippingAddress,
         paymentMethod: cart.paymentMethod,
-        itemsPrice: cart.itemsPrice,
-        shippingPrice: cart.shippingPrice,
-        taxPrice: cart.taxPrice,
-        totalPrice: cart.totalPrice,
+        itemsPrice: Number(cart.itemsPrice),
+        shippingPrice: Number(cart.shippingPrice),
+        taxPrice: Number(cart.taxPrice),
+        totalPrice: Number(cart.totalPrice),
       }).unwrap();
+
       dispatch(clearCartItems());
       navigate(`/order/${res._id}`);
     } catch (err) {
-      toast.error(err?.data?.message || err.message);
+      toast.error(err?.data?.error || err.message);
     }
   };
 
@@ -67,11 +74,13 @@ const PlaceOrder = () => {
                       />
                     </td>
                     <td className="p-2">
-                      <Link to={`/product/${item.product}`}>{item.name}</Link>
+                      <Link to={`/product/${item._id}`}>{item.name}</Link>
                     </td>
-                    <td className="p-2">{item.qty}</td>
-                    <td className="p-2">₹ {item.price.toFixed(2)}</td>
-                    <td className="p-2">₹ {(item.qty * item.price).toFixed(2)}</td>
+                    <td className="p-2">{item.qty || item.quantity}</td>
+                    <td className="p-2">₹ {Number(item.price).toFixed(2)}</td>
+                    <td className="p-2">
+                      ₹ {(Number(item.price) * (item.qty || item.quantity)).toFixed(2)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -84,19 +93,19 @@ const PlaceOrder = () => {
             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
             <ul className="text-lg space-y-2">
               <li>
-                <span className="font-semibold">Items:</span> ₹ {cart.itemsPrice}
+                <span className="font-semibold">Items:</span> ₹ {Number(cart.itemsPrice).toFixed(2)}
               </li>
               <li>
-                <span className="font-semibold">Shipping:</span> ₹ {cart.shippingPrice}
+                <span className="font-semibold">Shipping:</span> ₹ {Number(cart.shippingPrice).toFixed(2)}
               </li>
               <li>
-                <span className="font-semibold">Tax:</span> ₹ {cart.taxPrice}
+                <span className="font-semibold">Tax:</span> ₹ {Number(cart.taxPrice).toFixed(2)}
               </li>
               <li>
-                <span className="font-semibold">Total:</span> ₹ {cart.totalPrice}
+                <span className="font-semibold">Total:</span> ₹ {Number(cart.totalPrice).toFixed(2)}
               </li>
             </ul>
-            {error && <Message variant="danger">{error.data?.message || error.message}</Message>}
+            {error && <Message variant="danger">{error.data?.error || error.message}</Message>}
           </div>
 
           <div className="md:w-1/2 flex flex-col gap-4">

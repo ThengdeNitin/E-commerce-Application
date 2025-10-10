@@ -5,6 +5,7 @@ import asyncHandler from "./asyncHandler.js";
 const authenticate = asyncHandler(async (req, res, next) => {
   let token;
 
+  // Check for Bearer token or cookie
   if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
     token = req.headers.authorization.split(" ")[1];
   } else if (req.cookies.jwt) {
@@ -19,8 +20,13 @@ const authenticate = asyncHandler(async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Use the same key as in your JWT payload
-    req.user = await User.findById(decoded.userId).select("-password");
+    // Most JWTs store user id as 'id', not 'userId'
+    req.user = await User.findById(decoded.id || decoded.userId).select("-password");
+
+    if (!req.user) {
+      res.status(401);
+      throw new Error("User not found");
+    }
 
     next();
   } catch (error) {
@@ -30,6 +36,7 @@ const authenticate = asyncHandler(async (req, res, next) => {
   }
 });
 
+// Admin middleware
 const authorizeAdmin = (req, res, next) => {
   if (req.user && req.user.isAdmin) {
     next();

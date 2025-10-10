@@ -25,13 +25,65 @@ function calcPrices(orderItems) {
   };
 }
 
+// const createOrder = async (req, res) => {
+//   try {
+//     const { orderItems, shippingAddress, paymentMethod } = req.body;
+
+//     if (orderItems && orderItems.length === 0) {
+//       res.status(400);
+//       throw new Error("No order items");
+//     }
+
+//     const itemsFromDB = await Product.find({
+//       _id: { $in: orderItems.map((x) => x._id || x.product) },
+//     });
+
+//     const dbOrderItems = orderItems.map((itemFromClient) => {
+//       const matchingItemFromDB = itemsFromDB.find(
+//         (itemFromDB) => itemFromDB._id.toString() === itemFromClient._id
+//       );
+
+//       if (!matchingItemFromDB) {
+//         res.status(404);
+//         throw new Error(`Product not found: ${itemFromClient._id}`);
+//       }
+
+//       return {
+//         ...itemFromClient,
+//         product: itemFromClient._id,
+//         price: matchingItemFromDB.price,
+//         _id: undefined,
+//       };
+//     });
+
+//     const { itemsPrice, taxPrice, shippingPrice, totalPrice } =
+//       calcPrices(dbOrderItems);
+
+//     const order = new Order({
+//       orderItems: dbOrderItems,
+//       user: req.user._id,
+//       shippingAddress,
+//       paymentMethod,
+//       itemsPrice,
+//       taxPrice,
+//       shippingPrice,
+//       totalPrice,
+//     });
+
+//     const createdOrder = await order.save();
+//     res.status(201).json(createdOrder);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
 const createOrder = async (req, res) => {
   try {
+    console.log("User:", req.user); 
     const { orderItems, shippingAddress, paymentMethod } = req.body;
 
-    if (orderItems && orderItems.length === 0) {
-      res.status(400);
-      throw new Error("No order items");
+    if (!orderItems || orderItems.length === 0) {
+      return res.status(400).json({ error: "No order items" });
     }
 
     const itemsFromDB = await Product.find({
@@ -44,20 +96,19 @@ const createOrder = async (req, res) => {
       );
 
       if (!matchingItemFromDB) {
-        res.status(404);
         throw new Error(`Product not found: ${itemFromClient._id}`);
       }
 
       return {
-        ...itemFromClient,
-        product: itemFromClient._id,
+        product: matchingItemFromDB._id,
+        name: matchingItemFromDB.name,
+        image: matchingItemFromDB.image,
         price: matchingItemFromDB.price,
-        _id: undefined,
+        qty: itemFromClient.qty,
       };
     });
 
-    const { itemsPrice, taxPrice, shippingPrice, totalPrice } =
-      calcPrices(dbOrderItems);
+    const { itemsPrice, taxPrice, shippingPrice, totalPrice } = calcPrices(dbOrderItems);
 
     const order = new Order({
       orderItems: dbOrderItems,
@@ -73,6 +124,7 @@ const createOrder = async (req, res) => {
     const createdOrder = await order.save();
     res.status(201).json(createdOrder);
   } catch (error) {
+    console.error("Create order error:", error.message);
     res.status(500).json({ error: error.message });
   }
 };
